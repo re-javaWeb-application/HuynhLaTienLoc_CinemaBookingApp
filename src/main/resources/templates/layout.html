@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">CINEMA</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind Custom Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fdf2f8',
+                            100: '#fce7f3',
+                            200: '#fbcfe8',
+                            300: '#f9a8d4',
+                            400: '#f472b6',
+                            500: '#ec4899', // Pink primary
+                            600: '#db2777',
+                            700: '#be185d',
+                            800: '#9d174d',
+                            900: '#831843',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom CSS cho scrollbar (nếu cần) -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Scrollbar cho Modal */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1f2937;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-200 min-h-screen flex flex-col font-sans selection:bg-brand-500 selection:text-white">
+
+    <!-- Header / Navbar -->
+    <header class="bg-gray-900/80 backdrop-blur-md sticky top-0 z-40 border-b border-gray-800 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center">
+                    <a th:href="@{/}" class="text-3xl font-extrabold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-purple-500 hover:opacity-80 transition-opacity">
+                        <i class="fas fa-film mr-2 text-brand-500"></i>CINEMA
+                    </a>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" class="text-gray-300 hover:text-white hover:text-brand-400 px-3 py-2 text-sm font-semibold transition-colors">Phim Đang Chiếu</a>
+                    <a href="#" class="text-gray-300 hover:text-white hover:text-brand-400 px-3 py-2 text-sm font-semibold transition-colors">Lịch Chiếu</a>
+                    <a href="#" class="text-gray-300 hover:text-white hover:text-brand-400 px-3 py-2 text-sm font-semibold transition-colors">Khuyến Mãi</a>
+                </nav>
+
+                <!-- Auth Buttons -->
+                <div class="flex items-center space-x-4">
+                    <button id="btn-login" class="text-gray-300 hover:text-white text-sm font-semibold transition-colors py-2 px-3 rounded-lg hover:bg-gray-800">
+                        Đăng nhập
+                    </button>
+                    <button id="btn-register" class="bg-brand-600 hover:bg-brand-500 text-white px-5 py-2 rounded-full text-sm font-bold transition-all shadow-[0_0_15px_rgba(219,39,119,0.4)] hover:shadow-[0_0_20px_rgba(219,39,119,0.6)] hover:-translate-y-0.5 transform">
+                        Đăng ký
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Fragment -->
+    <main class="flex-grow">
+        <!-- Khu vực này sẽ được các trang khác thay thế nội dung -->
+        <div layout:fragment="content">
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-gray-900 pt-12 pb-8 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div class="col-span-1 md:col-span-2">
+                    <h3 class="text-2xl font-black text-white mb-4 tracking-tighter">
+                        <i class="fas fa-film mr-2 text-brand-500"></i>CINEMA
+                    </h3>
+                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm mb-6">
+                        Trải nghiệm không gian điện ảnh đẳng cấp với hệ thống âm thanh vòm và màn hình độ phân giải siêu nét. Đặt vé nhanh chóng và tiện lợi.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-brand-500 transition-colors"><i class="fab fa-facebook-f text-lg"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-brand-500 transition-colors"><i class="fab fa-instagram text-lg"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-brand-500 transition-colors"><i class="fab fa-youtube text-lg"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold text-white mb-4 uppercase tracking-wider text-sm">Chính Sách</h4>
+                    <ul class="space-y-3 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-brand-400 transition-colors">Điều khoản chung</a></li>
+                        <li><a href="#" class="hover:text-brand-400 transition-colors">Chính sách bảo mật</a></li>
+                        <li><a href="#" class="hover:text-brand-400 transition-colors">Chính sách thanh toán</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold text-white mb-4 uppercase tracking-wider text-sm">Hỗ Trợ</h4>
+                    <ul class="space-y-3 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-brand-400 transition-colors">Góp ý</a></li>
+                        <li><a href="#" class="hover:text-brand-400 transition-colors">Sale & Services</a></li>
+                        <li><a href="#" class="hover:text-brand-400 transition-colors">Rạp / Giá vé</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 mt-8 flex flex-col md:flex-row justify-between items-center">
+                <div class="text-sm text-gray-500 mb-4 md:mb-0">
+                    &copy; 2026 CINEMA. All rights reserved.
+                </div>
+                <div class="flex space-x-4">
+                    <i class="fab fa-cc-visa text-gray-600 text-2xl"></i>
+                    <i class="fab fa-cc-mastercard text-gray-600 text-2xl"></i>
+                    <i class="fab fa-cc-paypal text-gray-600 text-2xl"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Khu vực dành riêng cho các Modals -->
+    <div layout:fragment="modals">
+    </div>
+    
+    <!-- Khu vực dành riêng cho Scripts -->
+    <script layout:fragment="scripts">
+    </script>
+    
+</body>
+</html>
