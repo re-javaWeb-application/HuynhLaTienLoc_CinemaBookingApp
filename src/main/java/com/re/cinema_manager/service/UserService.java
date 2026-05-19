@@ -23,7 +23,7 @@ public class UserService {
     public void Register(RegisterRequestDTO userDto){
 
         if(userRepository.existsUserByUsername(userDto.getUsername())) {
-            throw new IllegalArgumentException("The account name is already taken");
+            throw new IllegalArgumentException("Tên đăng nhập đã tồn tại");
         }
 
         User user = new User();
@@ -46,12 +46,12 @@ public class UserService {
     }
 
     public User Login(LoginDto loginDto){
-        User user = userRepository.findUserByUsername(loginDto.getUserName()).orElseThrow(()-> new IllegalArgumentException("Invalid username or password"));
+        User user = userRepository.findUserByUsername(loginDto.getUserName()).orElseThrow(()-> new IllegalArgumentException("Tên đăng nhập hoặc mật khẩu không chính xác"));
 
         Boolean checkPass = PasswordUtil.verifyPassword(loginDto.getPassWord(),user.getPassword());
 
         if(!checkPass){
-            throw new IllegalArgumentException("Invalid username or password");
+            throw new IllegalArgumentException("Tên đăng nhập hoặc mật khẩu không chính xác");
         }
 
         return user;

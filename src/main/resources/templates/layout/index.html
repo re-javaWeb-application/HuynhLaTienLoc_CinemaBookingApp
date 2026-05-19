@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">CINEMAX</title>
+    <th:block th:replace="~{fragments/header :: head}"></th:block>
+</head>
+<body class="bg-cinema-dark text-gray-200 min-h-screen flex flex-col font-sans">
+
+    <th:block th:replace="~{fragments/navigation :: navigation}"></th:block>
+
+    <main class="flex-grow">
+        <div layout:fragment="content"></div>
+    </main>
+
+    <th:block th:replace="~{fragments/footer :: footer}"></th:block>
+
+    <div layout:fragment="modals"></div>
+
+    <!-- Nav scroll script -->
+    <th:block th:replace="~{fragments/navigation :: nav-script}"></th:block>
+
+    <script layout:fragment="scripts"></script>
+
+</body>
+</html>

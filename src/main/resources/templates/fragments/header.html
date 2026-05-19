@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Fragment này chứa các thẻ meta, CDN, font — được nhúng VÀO BÊN TRONG <head> của layout -->
+    <th:block th:fragment="head">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="CINEMA - Hệ thống đặt vé xem phim trực tuyến hàng đầu Việt Nam. Trải nghiệm điện ảnh đỉnh cao.">
+
+        <!-- Tailwind CSS CDN -->
+        <script src="https://cdn.tailwindcss.com"></script>
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+        <!-- Google Fonts: Inter + Space Grotesk -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+        <!-- Tailwind Custom Config -->
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            sans: ['Inter', 'system-ui', 'sans-serif'],
+                            display: ['Space Grotesk', 'Inter', 'sans-serif'],
+                        },
+                        colors: {
+                            brand: {
+                                50:  '#fdf2f8',
+                                100: '#fce7f3',
+                                200: '#fbcfe8',
+                                300: '#f9a8d4',
+                                400: '#f472b6',
+                                500: '#ec4899',
+                                600: '#db2777',
+                                700: '#be185d',
+                                800: '#9d174d',
+                                900: '#831843',
+                            },
+                            cinema: {
+                                dark: '#0a0a0f',
+                                card: '#12121a',
+                                surface: '#1a1a2e',
+                                border: '#2a2a3e',
+                            }
+                        },
+                        animation: {
+                            'float': 'float 6s ease-in-out infinite',
+                            'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
+                            'slide-up': 'slideUp 0.6s ease-out forwards',
+                            'slide-down': 'slideDown 0.3s ease-out forwards',
+                            'fade-in': 'fadeIn 0.5s ease-out forwards',
+                            'shimmer': 'shimmer 2s linear infinite',
+                            'spin-slow': 'spin 8s linear infinite',
+                        },
+                        keyframes: {
+                            float: {
+                                '0%, 100%': { transform: 'translateY(0px)' },
+                                '50%': { transform: 'translateY(-20px)' },
+                            },
+                            pulseGlow: {
+                                '0%, 100%': { boxShadow: '0 0 20px rgba(236, 72, 153, 0.3)' },
+                                '50%': { boxShadow: '0 0 40px rgba(236, 72, 153, 0.6)' },
+                            },
+                            slideUp: {
+                                '0%': { opacity: '0', transform: 'translateY(30px)' },
+                                '100%': { opacity: '1', transform: 'translateY(0)' },
+                            },
+                            slideDown: {
+                                '0%': { opacity: '0', transform: 'translateY(-10px)' },
+                                '100%': { opacity: '1', transform: 'translateY(0)' },
+                            },
+                            fadeIn: {
+                                '0%': { opacity: '0' },
+                                '100%': { opacity: '1' },
+                            },
+                            shimmer: {
+                                '0%': { backgroundPosition: '-200% 0' },
+                                '100%': { backgroundPosition: '200% 0' },
+                            },
+                        },
+                        boxShadow: {
+                            'neon': '0 0 15px rgba(236, 72, 153, 0.4), 0 0 60px rgba(236, 72, 153, 0.1)',
+                            'neon-lg': '0 0 30px rgba(236, 72, 153, 0.5), 0 0 100px rgba(236, 72, 153, 0.15)',
+                            'card': '0 8px 32px rgba(0, 0, 0, 0.4)',
+                            'card-hover': '0 16px 48px rgba(0, 0, 0, 0.6), 0 0 30px rgba(236, 72, 153, 0.15)',
+                        }
+                    }
+                }
+            }
+        </script>
+
+        <!-- Global Styles -->
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body {
+                font-family: 'Inter', system-ui, sans-serif;
+                background-color: #0a0a0f;
+                color: #e2e8f0;
+                overflow-x: hidden;
+            }
+
+            /* Custom Scrollbar */
+            ::-webkit-scrollbar { width: 8px; }
+            ::-webkit-scrollbar-track { background: #0a0a0f; }
+            ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #ec4899, #8b5cf6); border-radius: 10px; }
+            ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #f472b6, #a78bfa); }
+
+            .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+            .custom-scrollbar::-webkit-scrollbar-track { background: #1a1a2e; border-radius: 4px; }
+            .custom-scrollbar::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+
+            /* Browser autofill fix for dark theme */
+            input:-webkit-autofill,
+            input:-webkit-autofill:hover,
+            input:-webkit-autofill:focus,
+            input:-webkit-autofill:active {
+                -webkit-box-shadow: 0 0 0 30px #12121a inset !important;
+                -webkit-text-fill-color: white !important;
+                caret-color: white !important;
+                transition: background-color 5000s ease-in-out 0s;
+            }
+
+            /* Smooth selection */
+            ::selection {
+                background: rgba(236, 72, 153, 0.4);
+                color: white;
+            }
+
+            /* Glassmorphism helper */
+            .glass {
+                background: rgba(18, 18, 26, 0.7);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border: 1px solid rgba(255, 255, 255, 0.05);
+            }
+
+            /* Gradient text helper */
+            .gradient-text {
+                background: linear-gradient(135deg, #ec4899, #8b5cf6);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            /* Neon underline animation */
+            .neon-underline::after {
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                width: 0;
+                height: 2px;
+                background: linear-gradient(90deg, #ec4899, #8b5cf6);
+                transition: width 0.3s ease;
+                border-radius: 2px;
+            }
+            .neon-underline:hover::after {
+                width: 100%;
+            }
+
+            /* Animated background gradient */
+            .animated-bg {
+                background: linear-gradient(-45deg, #0a0a0f, #1a0a1e, #0a1a1e, #0a0a0f);
+                background-size: 400% 400%;
+                animation: gradientShift 15s ease infinite;
+            }
+            @keyframes gradientShift {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
+
+            /* Card shine effect */
+            .card-shine {
+                position: relative;
+                overflow: hidden;
+            }
+            .card-shine::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: linear-gradient(
+                    45deg,
+                    transparent 30%,
+                    rgba(255, 255, 255, 0.03) 50%,
+                    transparent 70%
+                );
+                transform: rotate(45deg);
+                transition: all 0.6s ease;
+                opacity: 0;
+            }
+            .card-shine:hover::before {
+                opacity: 1;
+                transform: rotate(45deg) translate(50%, 50%);
+            }
+
+            /* Smooth scroll */
+            html {
+                scroll-behavior: smooth;
+            }
+
+            /* Loading skeleton animation */
+            .skeleton {
+                background: linear-gradient(90deg, #1a1a2e 25%, #2a2a3e 50%, #1a1a2e 75%);
+                background-size: 200% 100%;
+                animation: shimmer 1.5s infinite;
+            }
+            @keyframes shimmer {
+                0% { background-position: 200% 0; }
+                100% { background-position: -200% 0; }
+            }
+
+            /* Hover glow for interactive elements */
+            .hover-glow {
+                transition: all 0.3s ease;
+            }
+            .hover-glow:hover {
+                box-shadow: 0 0 20px rgba(236, 72, 153, 0.3);
+            }
+
+            /* Mobile menu overlay */
+            .mobile-menu-overlay {
+                transition: opacity 0.3s ease;
+            }
+        </style>
+    </th:block>
+</head>
+<body></body>
+</html>

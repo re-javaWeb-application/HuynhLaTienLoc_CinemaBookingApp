@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/index}">
+<head><title>Hồ Sơ Của Tôi</title></head>
+
+<main layout:fragment="content">
+
+    <!-- Toast -->
+    <div th:replace="~{fragments/toast :: toast}"></div>
+
+    <section class="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 animated-bg">
+
+        <!-- Ambient blobs -->
+        <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+            <div class="absolute top-1/4 -left-32 w-[500px] h-[500px] bg-brand-600/8 rounded-full blur-3xl animate-float"></div>
+            <div class="absolute bottom-1/4 -right-32 w-[400px] h-[400px] bg-purple-600/8 rounded-full blur-3xl animate-float" style="animation-delay:-3s"></div>
+        </div>
+
+        <div class="relative z-10 max-w-5xl mx-auto">
+
+            <!-- Page header -->
+            <div class="mb-10 animate-slide-up">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-1.5 h-10 bg-gradient-to-b from-brand-500 to-purple-500 rounded-full"></div>
+                    <div>
+                        <h1 class="text-4xl font-display font-bold text-white">Hồ Sơ Cá Nhân</h1>
+                        <p class="text-gray-500 text-sm mt-1">Quản lý thông tin tài khoản của bạn</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!--  HERO CARD — Horizontal layout, no overlap  -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div class="rounded-3xl bg-cinema-card border border-white/5 shadow-card overflow-hidden mb-6 animate-slide-up" style="animation-delay:.1s">
+                <div class="relative flex flex-col sm:flex-row items-start sm:items-center gap-6 p-7 sm:p-10">
+
+                    <!-- Left gradient accent strip -->
+                    <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-brand-500 to-purple-600 rounded-l-3xl"></div>
+                    <!-- Background glow -->
+                    <div class="absolute inset-0 pointer-events-none"
+                         style="background:radial-gradient(ellipse at 0% 50%,rgba(236,72,153,.07) 0%,transparent 65%)"></div>
+
+                    <!-- Avatar -->
+                    <div class="relative flex-shrink-0 ml-3">
+                        <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-brand-500 to-purple-600
+                                    flex items-center justify-center text-white text-3xl sm:text-4xl font-bold
+                                    shadow-neon hover:scale-105 transition-transform duration-300">
+                            <span th:text="${profile.avatarInitial}">U</span>
+                        </div>
+                        <!-- Online dot -->
+                        <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-cinema-card"></div>
+                    </div>
+
+                    <!-- Name block -->
+                    <div class="flex-1 min-w-0">
+                        <h2 class="text-2xl sm:text-3xl font-display font-bold text-white leading-tight truncate"
+                            th:text="${profile.fullName}">Full Name</h2>
+                        <p class="text-gray-400 text-sm mt-0.5" th:text="'@' + ${profile.username}">@username</p>
+                        <span th:classappend="${profile.role == 'ADMIN'} ? 'bg-amber-500/15 text-amber-400 border-amber-500/30' : 'bg-brand-500/15 text-brand-400 border-brand-500/30'"
+                              class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border mt-3">
+                            <i th:classappend="${profile.role == 'ADMIN'} ? 'fas fa-crown' : 'fas fa-ticket-alt'" class="text-xs"></i>
+                            <span th:text="${profile.role == 'ADMIN'} ? 'Quản trị viên' : 'Khách hàng'">Khách hàng</span>
+                        </span>
+                    </div>
+
+                    <!-- Stats pills — pushed to right -->
+                    <div class="flex items-center gap-3 flex-wrap sm:ml-auto">
+                        <div class="flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-white/5 border border-white/5">
+                            <div class="w-8 h-8 rounded-xl bg-cyan-500/10 flex items-center justify-center">
+                                <i class="fas fa-calendar-alt text-cyan-400 text-xs"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-xs">Tham gia</p>
+                                <p class="text-white text-sm font-semibold" th:text="${#temporals.format(profile.joinDate,'dd/MM/yyyy')}">01/01/2024</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-white/5 border border-white/5">
+                            <div class="w-8 h-8 rounded-xl bg-purple-500/10 flex items-center justify-center">
+                                <i class="fas fa-shield-alt text-purple-400 text-xs"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-xs">Vai trò</p>
+                                <p class="text-white text-sm font-semibold"
+                                   th:text="${profile.role == 'ADMIN'} ? 'Admin' : 'Customer'">Customer</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!--  INFO CARD — View Mode / Edit Mode          -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div class="rounded-3xl bg-cinema-card border border-white/5 shadow-card p-8 sm:p-12 animate-slide-up" style="animation-delay:.2s">
+
+                <!-- Card header -->
+                <div class="flex items-center justify-between mb-10">
+                    <div>
+                        <h3 class="text-xl font-display font-bold text-white" id="card-title">Thông Tin Tài Khoản</h3>
+                        <p class="text-gray-500 text-sm mt-1" id="card-subtitle">Nhấn icon bút chì để chỉnh sửa thông tin</p>
+                    </div>
+                    <!-- Edit toggle button -->
+                    <button id="btn-toggle-edit" type="button"
+                            class="w-12 h-12 rounded-2xl bg-brand-500/10 border border-brand-500/20
+                                   flex items-center justify-center
+                                   hover:bg-brand-500/25 hover:border-brand-500/50 hover:scale-110
+                                   transition-all duration-300 group"
+                            title="Chỉnh sửa hồ sơ">
+                        <i id="toggle-icon" class="fas fa-pen text-brand-400 text-sm group-hover:text-brand-300 transition-colors"></i>
+                    </button>
+                </div>
+
+                <!-- ─── VIEW MODE ─── -->
+                <div id="view-mode">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+                        <!-- Full Name -->
+                        <div class="space-y-1.5">
+                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-widest flex items-center gap-1.5">
+                                <i class="fas fa-user text-brand-400"></i> Họ &amp; Tên
+                            </p>
+                            <p class="text-lg font-medium text-white py-3 px-4 rounded-xl bg-white/3 border border-white/5"
+                               id="view-fullname" th:text="${profile.fullName}">Full Name</p>
+                        </div>
+
+                        <!-- Username -->
+                        <div class="space-y-1.5">
+                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-widest flex items-center gap-1.5">
+                                <i class="fas fa-at text-gray-600"></i> Tên đăng nhập
+                                <span class="text-gray-700 font-normal normal-case text-xs">(cố định)</span>
+                            </p>
+                            <p class="text-lg font-medium text-gray-500 py-3 px-4 rounded-xl bg-cinema-dark/40 border border-white/3 cursor-not-allowed"
+                               th:text="${profile.username}">username</p>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="space-y-1.5">
+                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-widest flex items-center gap-1.5">
+                                <i class="fas fa-envelope text-gray-600"></i> Email
+                                <span class="text-gray-700 font-normal normal-case text-xs">(cố định)</span>
+                            </p>
+                            <p class="text-lg font-medium text-gray-500 py-3 px-4 rounded-xl bg-cinema-dark/40 border border-white/3 cursor-not-allowed truncate"
+                               th:text="${profile.email}">email@example.com</p>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="space-y-1.5">
+                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-widest flex items-center gap-1.5">
+                                <i class="fas fa-phone text-purple-400"></i> Số điện thoại
+                            </p>
+                            <p class="text-lg font-medium text-white py-3 px-4 rounded-xl bg-white/3 border border-white/5"
+                               id="view-phone"
+                               th:text="${profile.phone != null and !profile.phone.isBlank()} ? ${profile.phone} : 'Chưa cập nhật'">
+                                0912345678</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ─── EDIT MODE (hidden initially) ─── -->
+                <div id="edit-mode" class="hidden">
+                    <form th:action="@{/profile/update}"
+                          th:object="${updateRequest}"
+                          method="post"
+                          id="profile-form"
+                          novalidate>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+
+                            <!-- Full Name (editable) -->
+                            <div class="space-y-2">
+                                <label for="fullName" class="text-xs font-semibold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                                    <i class="fas fa-user text-brand-400"></i> Họ &amp; Tên
+                                    <span class="text-brand-500 ml-0.5">*</span>
+                                </label>
+                                <input type="text" id="fullName" th:field="*{fullName}"
+                                       placeholder="Nhập họ và tên đầy đủ"
+                                       class="w-full bg-cinema-surface border border-cinema-border rounded-xl px-4 py-3.5 text-white text-base
+                                              placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-2
+                                              focus:ring-brand-500/20 transition-all duration-300 hover:border-white/20"
+                                       th:classappend="${#fields.hasErrors('fullName')} ? ' !border-red-500 focus:!ring-red-500/20' : ''">
+                                <p th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"
+                                   class="text-red-400 text-xs flex items-center gap-1 mt-1">
+                                </p>
+                            </div>
+
+                            <!-- Username (disabled) -->
+                            <div class="space-y-2">
+                                <label class="text-xs font-semibold text-gray-600 uppercase tracking-widest flex items-center gap-1.5">
+                                    <i class="fas fa-at text-gray-700"></i> Tên đăng nhập
+                                    <span class="text-gray-700 font-normal normal-case">(cố định)</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="text" th:value="${profile.username}" disabled
+                                           class="w-full bg-cinema-dark/50 border border-white/5 rounded-xl px-4 py-3.5
+                                                  text-gray-600 text-base cursor-not-allowed opacity-50">
+                                    <i class="fas fa-lock absolute right-4 top-1/2 -translate-y-1/2 text-gray-700 text-xs"></i>
+                                </div>
+                            </div>
+
+                            <!-- Email (disabled) -->
+                            <div class="space-y-2">
+                                <label class="text-xs font-semibold text-gray-600 uppercase tracking-widest flex items-center gap-1.5">
+                                    <i class="fas fa-envelope text-gray-700"></i> Email
+                                    <span class="text-gray-700 font-normal normal-case">(cố định)</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="email" th:value="${profile.email}" disabled
+                                           class="w-full bg-cinema-dark/50 border border-white/5 rounded-xl px-4 py-3.5
+                                                  text-gray-600 text-base cursor-not-allowed opacity-50 truncate pr-10">
+                                    <i class="fas fa-lock absolute right-4 top-1/2 -translate-y-1/2 text-gray-700 text-xs"></i>
+                                </div>
+                            </div>
+
+                            <!-- Phone (editable) -->
+                            <div class="space-y-2">
+                                <label for="phone" class="text-xs font-semibold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                                    <i class="fas fa-phone text-purple-400"></i> Số điện thoại
+                                </label>
+                                <input type="tel" id="phone" th:field="*{phone}"
+                                       placeholder="VD: 0912345678"
+                                       class="w-full bg-cinema-surface border border-cinema-border rounded-xl px-4 py-3.5 text-white text-base
+                                              placeholder-gray-600 focus:outline-none focus:border-purple-500 focus:ring-2
+                                              focus:ring-purple-500/20 transition-all duration-300 hover:border-white/20"
+                                       th:classappend="${#fields.hasErrors('phone')} ? ' !border-red-500 focus:!ring-red-500/20' : ''">
+                                <p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"
+                                   class="text-red-400 text-xs flex items-center gap-1 mt-1">
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="border-t border-white/5 my-8"></div>
+
+                        <!-- Action buttons -->
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <p class="text-gray-600 text-sm order-2 sm:order-1">
+                                <i class="fas fa-info-circle text-brand-500/60 mr-1.5"></i>
+                                Chỉ <span class="text-gray-400 font-medium">Họ &amp; Tên</span> và
+                                <span class="text-gray-400 font-medium">Số điện thoại</span> có thể cập nhật.
+                            </p>
+                            <div class="flex items-center gap-3 order-1 sm:order-2">
+                                <!-- Cancel -->
+                                <button type="button" id="btn-cancel-edit"
+                                        class="px-6 py-3 rounded-xl border border-white/10 text-gray-400
+                                               hover:text-white hover:border-white/20 hover:bg-white/5
+                                               transition-all duration-300 text-sm font-medium">
+                                    Hủy
+                                </button>
+                                <!-- Save -->
+                                <button type="submit" id="btn-save-profile"
+                                        class="relative flex items-center gap-2.5 bg-gradient-to-r from-brand-600 to-purple-600
+                                               hover:from-brand-500 hover:to-purple-500 text-white font-bold py-3 px-8
+                                               rounded-xl transition-all duration-300 shadow-neon hover:shadow-neon-lg
+                                               hover:-translate-y-0.5 transform overflow-hidden group
+                                               disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none">
+                                    <svg id="btn-spinner" class="hidden animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                    </svg>
+                                    <i id="btn-icon" class="fas fa-save text-sm"></i>
+                                    <span id="btn-text">Lưu Thay Đổi</span>
+                                    <div class="absolute inset-0 bg-gradient-to-r from-brand-400 to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <!-- END EDIT MODE -->
+
+            </div>
+            <!-- END INFO CARD -->
+
+        </div>
+    </section>
+</main>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  SCRIPTS                                               -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script layout:fragment="scripts">
+(function () {
+    // ── DOM refs ──
+    const btnToggle  = document.getElementById('btn-toggle-edit');
+    const btnCancel  = document.getElementById('btn-cancel-edit');
+    const viewMode   = document.getElementById('view-mode');
+    const editMode   = document.getElementById('edit-mode');
+    const toggleIcon = document.getElementById('toggle-icon');
+    const cardTitle  = document.getElementById('card-title');
+    const cardSub    = document.getElementById('card-subtitle');
+
+    // ── Lưu giá trị GỐC từ server để reset khi Cancel ──
+    const inputFullName = document.getElementById('fullName');
+    const inputPhone    = document.getElementById('phone');
+    const originalFullName = inputFullName ? inputFullName.value : '';
+    const originalPhone    = inputPhone    ? inputPhone.value    : '';
+
+    let isEditing = false;
+
+    // Check if server returned validation errors → open edit mode immediately
+    const hasErrors = document.querySelector('.text-red-400');
+
+    function enterEdit() {
+        isEditing = true;
+        viewMode.classList.add('hidden');
+        editMode.classList.remove('hidden');
+        toggleIcon.classList.remove('fa-pen');
+        toggleIcon.classList.add('fa-times');
+        btnToggle.classList.remove('bg-brand-500/10','border-brand-500/20');
+        btnToggle.classList.add('bg-red-500/10','border-red-500/20');
+        toggleIcon.classList.remove('text-brand-400');
+        toggleIcon.classList.add('text-red-400');
+        cardTitle.textContent = 'Chỉnh Sửa Thông Tin';
+        cardSub.textContent   = 'Nhấn ✕ hoặc Hủy để thoát khỏi chế độ chỉnh sửa';
+        setTimeout(() => inputFullName?.focus(), 50);
+    }
+
+    function exitEdit() {
+        isEditing = false;
+
+        // ── Reset form về giá trị gốc (server-rendered) ──
+        if (inputFullName) inputFullName.value = originalFullName;
+        if (inputPhone)    inputPhone.value    = originalPhone;
+
+        // Xoá trạng thái lỗi border nếu có
+        inputFullName?.classList.remove('!border-red-500','focus:!ring-red-500/20');
+        inputPhone?.classList.remove('!border-red-500','focus:!ring-red-500/20');
+
+        viewMode.classList.remove('hidden');
+        editMode.classList.add('hidden');
+        toggleIcon.classList.add('fa-pen');
+        toggleIcon.classList.remove('fa-times');
+        btnToggle.classList.add('bg-brand-500/10','border-brand-500/20');
+        btnToggle.classList.remove('bg-red-500/10','border-red-500/20');
+        toggleIcon.classList.add('text-brand-400');
+        toggleIcon.classList.remove('text-red-400');
+        cardTitle.textContent = 'Thông Tin Tài Khoản';
+        cardSub.textContent   = 'Nhấn icon bút chì để chỉnh sửa thông tin';
+    }
+
+    btnToggle.addEventListener('click', () => isEditing ? exitEdit() : enterEdit());
+    if (btnCancel) btnCancel.addEventListener('click', exitEdit);
+
+    // Auto-enter edit nếu server trả về lỗi validation
+    if (hasErrors) enterEdit();
+
+    // ── Loading state on submit ──
+    const form    = document.getElementById('profile-form');
+    const btn     = document.getElementById('btn-save-profile');
+    const spinner = document.getElementById('btn-spinner');
+    const icon    = document.getElementById('btn-icon');
+    const btnText = document.getElementById('btn-text');
+
+    if (form && btn) {
+        form.addEventListener('submit', () => {
+            btn.disabled = true;
+            spinner.classList.remove('hidden');
+            icon.classList.add('hidden');
+            btnText.textContent = 'Đang lưu...';
+        });
+    }
+
+    // ── Toast ──
+    const toastEl  = document.getElementById('toast-notification');
+    if (toastEl) {
+        const type    = toastEl.dataset.type;
+        const message = toastEl.dataset.message;
+        if (!message) return;
+
+        const toastMsg  = document.getElementById('toast-message');
+        const toastIcon = document.getElementById('toast-icon');
+
+        if (type === 'success') {
+            toastEl.classList.add('border-green-500/40','bg-green-500/10');
+            toastIcon.innerHTML = '<i class="fas fa-check-circle text-green-400 text-xl"></i>';
+            toastMsg.classList.add('text-green-200');
+        } else {
+            toastEl.classList.add('border-red-500/40','bg-red-500/10');
+            toastIcon.innerHTML = '<i class="fas fa-times-circle text-red-400 text-xl"></i>';
+            toastMsg.classList.add('text-red-200');
+        }
+        toastMsg.textContent = message;
+
+        toastEl.classList.remove('translate-y-full','opacity-0','pointer-events-none','hidden');
+        toastEl.classList.add('translate-y-0','opacity-100');
+
+        const hide = () => {
+            toastEl.classList.add('opacity-0','translate-y-4');
+            setTimeout(() => toastEl.classList.add('hidden'), 400);
+        };
+        setTimeout(hide, 4500);
+        document.getElementById('toast-close')?.addEventListener('click', hide);
+    }
+})();
+</script>
+
+</html>
