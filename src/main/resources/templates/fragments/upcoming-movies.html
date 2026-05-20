@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+  <section th:fragment="upcoming-movies" id="phim-sap-chieu" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <div class="mb-10 text-center md:text-left">
+      <h2 class="text-3xl font-black text-white uppercase tracking-tight">Phim Sắp Chiếu</h2>
+      <div class="h-1 w-20 bg-brand-500 mt-2 rounded-full mx-auto md:mx-0"></div>
+      <p class="text-gray-400 mt-3 text-sm">Theo thể loại — chọn phim và đặt vé suất sắp tới</p>
+    </div>
+
+    <div class="flex flex-wrap gap-2 mb-12" th:if="${!genreSections.isEmpty()}">
+      <a
+        th:each="section : ${genreSections}"
+        th:href="|#genre-${section.genreId}|"
+        class="px-4 py-2 rounded-full text-sm font-semibold border border-white/10 text-gray-300 hover:border-brand-500/50 hover:text-brand-300 hover:bg-brand-500/10 transition-all"
+        th:text="${section.genreName}"
+      ></a>
+    </div>
+
+    <div th:if="${genreSections.isEmpty()}" class="text-center py-16 rounded-2xl bg-cinema-card border border-white/5">
+      <i class="fas fa-calendar-xmark text-4xl text-gray-500 mb-4"></i>
+      <p class="text-gray-400">Hiện chưa có suất chiếu sắp tới. Vui lòng quay lại sau.</p>
+    </div>
+
+    <div th:each="section : ${genreSections}" th:id="|genre-${section.genreId}|" class="mb-16 scroll-mt-28">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="w-1.5 h-8 bg-gradient-to-b from-brand-500 to-purple-500 rounded-full"></span>
+        <h3 class="text-2xl font-bold text-white" th:text="${section.genreName}"></h3>
+        <span class="text-gray-500 text-sm" th:text="|(${section.movies.size()} phim)|"></span>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+        <div
+          th:each="movie : ${section.movies}"
+          class="bg-gray-900 rounded-2xl overflow-hidden group hover:-translate-y-2 transition-all duration-300 shadow-lg hover:shadow-brand-500/20 border border-white/5"
+        >
+          <div class="relative aspect-[2/3] overflow-hidden bg-cinema-surface">
+            <img
+              th:src="${movie.posterUrl}"
+              th:alt="${movie.title}"
+              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+              loading="lazy"
+              decoding="async"
+              onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27600%27%3E%3Crect fill=%27%231a1a2e%27 width=%27400%27 height=%27600%27/%3E%3Ctext x=%27200%27 y=%27300%27 fill=%27%236b7280%27 font-size=%2720%27 text-anchor=%27middle%27%3EN/A%3C/text%3E%3C/svg%3E'"
+            />
+            <span class="absolute top-3 left-3 bg-purple-600/90 text-white text-xs font-bold px-2 py-1 rounded" th:text="${movie.genreName}"></span>
+            <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+              <a
+                th:href="@{/booking/{id}(id=${movie.showtimeId})}"
+                class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-2.5 px-4 rounded-lg text-center text-sm transform translate-y-4 group-hover:translate-y-0 transition-all duration-300"
+              >
+                <i class="fas fa-ticket mr-1"></i> Đặt vé ngay
+              </a>
+            </div>
+          </div>
+          <div class="p-4">
+            <h4 class="text-lg font-bold text-white truncate group-hover:text-brand-400 transition-colors" th:text="${movie.title}"></h4>
+            <p class="text-xs text-gray-500 mt-1 line-clamp-2" th:text="${movie.description}"></p>
+            <div class="mt-3 space-y-1 text-sm text-gray-400">
+              <p class="flex items-center gap-1.5">
+                <i class="fas fa-clock text-brand-400 text-xs"></i>
+                <span th:text="${movie.durationMinutes} + ' phút'"></span>
+              </p>
+              <p class="flex items-center gap-1.5">
+                <i class="fas fa-calendar text-purple-400 text-xs"></i>
+                <span th:text="${#temporals.format(movie.startTime, 'dd/MM/yyyy HH:mm')}"></span>
+              </p>
+              <p class="flex items-center gap-1.5">
+                <i class="fas fa-door-open text-cyan-400 text-xs"></i>
+                <span th:text="${movie.roomName}"></span>
+              </p>
+            </div>
+            <a
+              th:href="@{/booking/{id}(id=${movie.showtimeId})}"
+              class="mt-4 block w-full text-center bg-gradient-to-r from-brand-600 to-purple-600 hover:from-brand-500 hover:to-purple-500 text-white font-semibold py-2.5 rounded-lg text-sm transition-all"
+            >
+              Đặt vé ngay
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

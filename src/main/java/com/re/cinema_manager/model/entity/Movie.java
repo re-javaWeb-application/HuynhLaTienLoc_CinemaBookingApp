@@ -16,9 +16,9 @@ import java.time.LocalDate;
 public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
-    @Column(name = "title", nullable = false)
+    @Column(name = "title", nullable = false, length = 255)
     private String title;
 
     @Column(name = "description", columnDefinition = "TEXT")
@@ -30,11 +30,10 @@ public class Movie {
     @Column(name = "release_date")
     private LocalDate releaseDate;
 
-    @Column(name = "poster_url")
+    @Column(name = "poster_url", length = 255)
     private String posterUrl;
-    
-    // Thiết lập mối quan hệ N-1 với bảng genres
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "genre_id")
     private Genre genre;
 }

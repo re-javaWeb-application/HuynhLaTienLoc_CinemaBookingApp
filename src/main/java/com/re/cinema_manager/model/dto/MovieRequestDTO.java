@@ -25,5 +25,5 @@ public class MovieRequestDTO {
     private String posterUrl;
     
     // Chú ý: Ta chỉ cần nhận ID của thể loại từ form của Admin, không nhận cả Object
-    private Integer genreId; 
+    private Long genreId;
 }

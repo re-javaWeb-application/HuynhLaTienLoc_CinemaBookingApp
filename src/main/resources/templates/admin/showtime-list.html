@@ -1,0 +1,121 @@
+﻿<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/index}">
+<head>
+  <title>Quản Lý Suất Chiếu</title>
+</head>
+<body>
+<main layout:fragment="content">
+  <div th:if="${successMessage}" data-auto-dismiss class="fixed top-4 right-4 z-50">
+    <div class="bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3">
+      <i class="fas fa-check-circle"></i>
+      <span th:text="${successMessage}"></span>
+    </div>
+  </div>
+
+  <div th:if="${errorMessage}" data-auto-dismiss class="fixed top-4 right-4 z-50">
+    <div class="bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3">
+      <i class="fas fa-exclamation-circle"></i>
+      <span th:text="${errorMessage}"></span>
+    </div>
+  </div>
+
+  <section class="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 animated-bg">
+    <div class="relative z-10 max-w-7xl mx-auto">
+      <div class="mb-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <div class="w-1.5 h-10 bg-gradient-to-b from-purple-500 to-brand-500 rounded-full"></div>
+          <div>
+            <h1 class="text-4xl font-display font-bold text-white">Quản Lý Suất Chiếu</h1>
+            <p class="text-gray-400 text-sm mt-1">
+              CORE-05 — Tổng: <span th:text="${showtimes.size()}"></span> suất
+              · Dọn phòng: <span th:text="${cleanupBufferMinutes}"></span> phút sau mỗi suất
+            </p>
+          </div>
+        </div>
+        <a th:href="@{/admin/showtimes/create}"
+           class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-brand-500 text-white rounded-lg font-semibold hover:scale-105 transition-all">
+          <i class="fas fa-plus"></i> Thêm Suất Chiếu
+        </a>
+      </div>
+
+      <div class="rounded-3xl bg-cinema-card border border-white/5 shadow-card overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-cinema-surface border-b border-white/5">
+              <tr>
+                <th class="px-4 py-4 text-left text-gray-300 font-semibold">ID</th>
+                <th class="px-4 py-4 text-left text-gray-300 font-semibold">Phim</th>
+                <th class="px-4 py-4 text-left text-gray-300 font-semibold">Phòng</th>
+                <th class="px-4 py-4 text-left text-gray-300 font-semibold">Bắt đầu</th>
+                <th class="px-4 py-4 text-left text-gray-300 font-semibold">Phòng rảnh từ</th>
+                <th class="px-4 py-4 text-center text-gray-300 font-semibold">Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="st : ${showtimes}" class="border-b border-white/5 hover:bg-cinema-surface/50">
+                <td class="px-4 py-4 text-gray-300" th:text="${st.id}"></td>
+                <td class="px-4 py-4">
+                  <p class="text-white font-semibold" th:text="${st.movie.title}"></p>
+                  <p class="text-gray-500 text-xs" th:text="${st.movie.durationMinutes} + ' phút'"></p>
+                </td>
+                <td class="px-4 py-4 text-gray-300" th:text="${st.room.roomName}"></td>
+                <td class="px-4 py-4 text-gray-300" th:text="${#temporals.format(st.startTime, 'dd/MM/yyyy HH:mm')}"></td>
+                <td class="px-4 py-4 text-brand-300"
+                    th:text="${#temporals.format(T(com.re.cinema_manager.service.showtime.ShowtimeConflictChecker).computeRoomFreeAt(st.startTime, st.movie.durationMinutes), 'dd/MM/yyyy HH:mm')}">
+                </td>
+                <td class="px-4 py-4">
+                  <div class="flex justify-center gap-2">
+                    <a th:href="@{/admin/showtimes/edit/{id}(id=${st.id})}"
+                       class="w-10 h-10 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600/40 flex items-center justify-center"
+                       title="Chỉnh sửa">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <button type="button" class="btn-delete-showtime w-10 h-10 rounded-lg bg-red-600/20 text-red-400 hover:bg-red-600/40 flex items-center justify-center"
+                            th:data-showtime-id="${st.id}" title="Xóa">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr th:if="${showtimes.isEmpty()}">
+                <td colspan="6" class="px-6 py-12 text-center text-gray-400">
+                  Chưa có suất chiếu. <a th:href="@{/admin/showtimes/create}" class="text-brand-400">Tạo suất đầu tiên</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div layout:fragment="modals">
+  <div id="deleteModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-cinema-card border border-white/10 rounded-2xl p-6 max-w-sm w-full">
+      <h3 class="text-xl font-bold text-white mb-4">Xác nhận xóa suất chiếu?</h3>
+      <div class="flex gap-3">
+        <button type="button" onclick="closeDeleteModal()" class="flex-1 py-2 rounded-lg border border-white/10 text-gray-300">Hủy</button>
+        <a id="deleteLink" href="#" class="flex-1 py-2 rounded-lg bg-red-600 text-white text-center">Xóa</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script layout:fragment="scripts">
+  function confirmDelete(id) {
+    document.getElementById('deleteLink').href = '/admin/showtimes/delete/' + id;
+    document.getElementById('deleteModal').classList.remove('hidden');
+  }
+  function closeDeleteModal() {
+    document.getElementById('deleteModal')?.classList.add('hidden');
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.btn-delete-showtime').forEach(btn => {
+      btn.addEventListener('click', () => confirmDelete(btn.getAttribute('data-showtime-id')));
+    });
+    document.querySelectorAll('[data-auto-dismiss]').forEach(el => setTimeout(() => el.remove(), 5000));
+  });
+</script>
+</body>
+</html>

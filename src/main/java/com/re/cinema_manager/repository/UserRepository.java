@@ -11,9 +11,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // Hàm này giúp Spring tự động tạo lệnh: SELECT * FROM users WHERE username = ?
     // Dùng để kiểm tra xem tài khoản đã tồn tại chưa khi đăng ký, và tìm user khi đăng nhập
-    Optional<User> findUserByUsername(String username);
+    Optional<User> findByUsername(String username);
 
-    // Tương tự, dùng để kiểm tra xem email đã có ai dùng chưa
-    boolean existsUserByUsername(String username);
+    // Tương tự, dùng để kiểm tra xem USERNAME đã có ai dùng chưa
+    boolean existsByUsername(String username);
 }
-

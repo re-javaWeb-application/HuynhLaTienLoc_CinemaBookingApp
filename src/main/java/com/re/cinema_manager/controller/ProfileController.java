@@ -71,7 +71,6 @@ public class ProfileController {
         if (bindingResult.hasErrors()) {
             ProfileViewModel profile = profileService.getProfileByUserId(loggedInUser.getId());
             model.addAttribute("profile", profile);
-            model.addAttribute("updateRequest", request);
             model.addAttribute("toastType", "error");
             model.addAttribute("toastMessage", "Vui lòng kiểm tra lại thông tin.");
             return "profile";

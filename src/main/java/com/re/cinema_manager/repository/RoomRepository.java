@@ -1,9 +1,9 @@
 package com.re.cinema_manager.repository;
 
-import com.re.cinema_manager.model.entity.Genre;
+import com.re.cinema_manager.model.entity.Room;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface GenreRepository extends JpaRepository<Genre, Long> {
+public interface RoomRepository extends JpaRepository<Room, Long> {
 }

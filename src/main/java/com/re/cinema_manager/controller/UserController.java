@@ -3,9 +3,12 @@ package com.re.cinema_manager.controller;
 import com.re.cinema_manager.model.dto.LoginDto;
 import com.re.cinema_manager.model.dto.RegisterRequestDTO;
 import com.re.cinema_manager.model.entity.User;
+import com.re.cinema_manager.model.entity.Role;
+import com.re.cinema_manager.service.CustomerHomeService;
 import com.re.cinema_manager.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -20,6 +23,7 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final CustomerHomeService customerHomeService;
 
     @GetMapping({ "/register" })
     public String showRegisterPage() {
@@ -71,7 +75,19 @@ public class UserController {
     }
 
     @GetMapping({ "/home", "/" })
-    public String showHomePage() {
+    public String showHomePage(HttpSession session, Model model) {
+        String accessDenied = (String) session.getAttribute("accessDeniedMessage");
+        if (accessDenied != null) {
+            model.addAttribute("accessDeniedMessage", accessDenied);
+            session.removeAttribute("accessDeniedMessage");
+        }
+
+        User user = (User) session.getAttribute("loggedInUser");
+        boolean customerView = user == null || user.getRole() != Role.ADMIN;
+        model.addAttribute("customerView", customerView);
+        if (customerView) {
+            model.addAttribute("genreSections", customerHomeService.getUpcomingMoviesByGenre());
+        }
         return "home";
     }
 

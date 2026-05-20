@@ -1,0 +1,208 @@
+﻿<!doctype html>
+<html
+  lang="vi"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/index}"
+>
+  <head>
+    <title>Quản Lý Phim</title>
+  </head>
+
+  <body>
+    <main layout:fragment="content">
+      <div th:if="${successMessage}" data-auto-dismiss class="fixed top-4 right-4 z-50">
+        <div class="bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3">
+          <i class="fas fa-check-circle"></i>
+          <span th:text="${successMessage}"></span>
+        </div>
+      </div>
+
+      <div th:if="${errorMessage}" data-auto-dismiss class="fixed top-4 right-4 z-50">
+        <div class="bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3">
+          <i class="fas fa-exclamation-circle"></i>
+          <span th:text="${errorMessage}"></span>
+        </div>
+      </div>
+
+      <section class="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 animated-bg">
+        <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+          <div class="absolute top-1/4 -left-32 w-[500px] h-[500px] bg-brand-600/8 rounded-full blur-3xl animate-float"></div>
+          <div class="absolute bottom-1/4 -right-32 w-[400px] h-[400px] bg-purple-600/8 rounded-full blur-3xl animate-float" style="animation-delay: -3s"></div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto">
+          <div class="mb-10 animate-slide-up">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div class="flex items-center gap-4">
+                <div class="w-1.5 h-10 bg-gradient-to-b from-brand-500 to-purple-500 rounded-full"></div>
+                <div>
+                  <h1 class="text-4xl font-display font-bold text-white">Quản Lý Phim</h1>
+                  <p class="text-gray-400 text-sm mt-1">
+                    Tổng cộng: <span th:text="${movies.size()}"></span> phim
+                  </p>
+                </div>
+              </div>
+              <a
+                th:href="@{/admin/movies/create}"
+                class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-500 to-purple-600 text-white rounded-lg font-semibold hover:shadow-neon-lg transition-all duration-300 hover:scale-105"
+              >
+                <i class="fas fa-plus"></i>
+                Thêm Phim Mới
+              </a>
+            </div>
+          </div>
+
+          <div class="rounded-3xl bg-cinema-card border border-white/5 shadow-card overflow-hidden animate-slide-up">
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="bg-cinema-surface border-b border-white/5">
+                  <tr>
+                    <th class="px-6 py-4 text-left text-gray-300 font-semibold">ID</th>
+                    <th class="px-6 py-4 text-left text-gray-300 font-semibold">Tên Phim</th>
+                    <th class="px-6 py-4 text-left text-gray-300 font-semibold">Thể Loại</th>
+                    <th class="px-6 py-4 text-left text-gray-300 font-semibold">Thời Lượng</th>
+                    <th class="px-6 py-4 text-left text-gray-300 font-semibold">Ngày Phát Hành</th>
+                    <th class="px-6 py-4 text-center text-gray-300 font-semibold">Hành Động</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    th:each="movie : ${movies}"
+                    class="border-b border-white/5 hover:bg-cinema-surface/50 transition-colors duration-200"
+                  >
+                    <td class="px-6 py-4 text-gray-300" th:text="${movie.id}"></td>
+                    <td class="px-6 py-4">
+                      <div class="flex items-center gap-3">
+                        <img
+                          th:src="${movie.posterUrl}"
+                          alt="Poster"
+                          class="w-12 h-16 rounded object-cover bg-cinema-surface"
+                          loading="lazy"
+                          decoding="async"
+                          onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2748%27 height=%2764%27%3E%3Crect fill=%27%231a1a2e%27 width=%2748%27 height=%2764%27/%3E%3Ctext x=%2724%27 y=%2736%27 fill=%27%236b7280%27 font-size=%278%27 text-anchor=%27middle%27%3EN/A%3C/text%3E%3C/svg%3E'"
+                        />
+                        <div>
+                          <p class="font-semibold text-white" th:text="${movie.title}"></p>
+                          <p class="text-gray-400 text-xs line-clamp-1" th:text="${movie.description}"></p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4">
+                      <span
+                        class="px-3 py-1 rounded-full bg-brand-500/20 text-brand-300 text-xs font-semibold"
+                        th:text="${movie.genre != null ? movie.genre.name : '-'}"
+                      ></span>
+                    </td>
+                    <td class="px-6 py-4 text-gray-300">
+                      <span th:text="${movie.durationMinutes} + ' phút'"></span>
+                    </td>
+                    <td
+                      class="px-6 py-4 text-gray-300"
+                      th:text="${movie.releaseDate != null ? #temporals.format(movie.releaseDate, 'dd/MM/yyyy') : '-'}"
+                    ></td>
+                    <td class="px-6 py-4">
+                      <div class="flex items-center justify-center gap-2">
+                        <a
+                          th:href="@{/admin/movies/edit/{id}(id=${movie.id})}"
+                          class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600/40 transition-all duration-200 hover:scale-110"
+                          title="Chỉnh sửa"
+                        >
+                          <i class="fas fa-edit"></i>
+                        </a>
+                        <button
+                          type="button"
+                          class="btn-delete-movie inline-flex items-center justify-center w-10 h-10 rounded-lg bg-red-600/20 text-red-400 hover:bg-red-600/40 transition-all duration-200 hover:scale-110"
+                          title="Xóa"
+                          th:data-movie-id="${movie.id}"
+                        >
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr th:if="${movies.isEmpty()}">
+                    <td colspan="6" class="px-6 py-12 text-center">
+                      <div class="flex flex-col items-center justify-center">
+                        <i class="fas fa-inbox text-4xl text-gray-500 mb-3"></i>
+                        <p class="text-gray-400 mb-4">Chưa có phim nào trong hệ thống</p>
+                        <a th:href="@{/admin/movies/create}" class="text-brand-400 hover:text-brand-300 font-semibold">
+                          Thêm phim đầu tiên
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div layout:fragment="modals">
+      <div
+        id="deleteModal"
+        class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      >
+        <div class="bg-cinema-card border border-white/10 rounded-2xl p-6 max-w-sm w-full animate-slide-up">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-lg bg-red-600/20 flex items-center justify-center">
+              <i class="fas fa-exclamation-triangle text-red-400 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white">Xác Nhận Xóa</h3>
+          </div>
+          <p class="text-gray-300 mb-6">
+            Bạn chắc chắn muốn xóa phim này không? Hành động này không thể hoàn tác.
+          </p>
+          <div class="flex gap-3">
+            <button
+              type="button"
+              onclick="closeDeleteModal()"
+              class="flex-1 px-4 py-2 rounded-lg border border-white/10 text-gray-300 font-semibold hover:bg-white/5 transition-colors"
+            >
+              Hủy
+            </button>
+            <a
+              id="deleteLink"
+              href="#"
+              class="flex-1 px-4 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700 transition-colors text-center"
+            >
+              Xóa
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script layout:fragment="scripts">
+      function confirmDelete(movieId) {
+        const link = document.getElementById("deleteLink");
+        const modal = document.getElementById("deleteModal");
+        if (!link || !modal) return;
+        link.href = "/admin/movies/delete/" + movieId;
+        modal.classList.remove("hidden");
+      }
+
+      function closeDeleteModal() {
+        document.getElementById("deleteModal")?.classList.add("hidden");
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".btn-delete-movie").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            confirmDelete(btn.getAttribute("data-movie-id"));
+          });
+        });
+
+        document.getElementById("deleteModal")?.addEventListener("click", (e) => {
+          if (e.target.id === "deleteModal") closeDeleteModal();
+        });
+
+        document.querySelectorAll("[data-auto-dismiss]").forEach((toast) => {
+          setTimeout(() => toast.remove(), 5000);
+        });
+      });
+    </script>
+  </body>
+</html>

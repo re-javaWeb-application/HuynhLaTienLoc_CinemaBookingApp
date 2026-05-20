@@ -7,11 +7,11 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserProfileRepository extends JpaRepository<UserProfile, Integer> {
+public interface UserProfileRepository extends JpaRepository<UserProfile, Long> {
 
     // Hàm tự động sinh câu lệnh kiểm tra xem email đã ai đăng ký chưa
     boolean existsByEmail(String email);
 
     // Tìm UserProfile theo user_id (dùng cho ProfileService)
-    Optional<UserProfile> findByUserId(Long userId);
+    Optional<UserProfile> findByUser_Id(Long userId);
 }

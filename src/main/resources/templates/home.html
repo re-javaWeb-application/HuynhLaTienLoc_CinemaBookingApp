@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html
   lang="vi"
   xmlns:th="http://www.thymeleaf.org"
@@ -20,6 +20,8 @@
             src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
             alt="Cinema background"
             class="w-full h-full object-cover opacity-40"
+            fetchpriority="high"
+            decoding="async"
           />
           <div
             class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-900/60 to-transparent"
@@ -53,197 +55,56 @@
               bùng nổ, ghế ngồi thoải mái. Đặt vé ngay hôm nay để không bỏ lỡ
               những siêu phẩm bom tấn!
             </p>
-            <div class="flex space-x-4">
-              <button
-                class="bg-brand-600 hover:bg-brand-500 text-white font-bold py-3 px-8 rounded-full text-lg shadow-[0_0_20px_rgba(219,39,119,0.5)] transition-all transform hover:scale-105"
+            <div class="flex space-x-4" th:if="${customerView}">
+              <a
+                href="#phim-sap-chieu"
+                class="bg-brand-600 hover:bg-brand-500 text-white font-bold py-3 px-8 rounded-full text-lg shadow-[0_0_20px_rgba(219,39,119,0.5)] transition-all transform hover:scale-105 inline-block"
               >
-                Xem Lịch Chiếu
-              </button>
-              <button
-                class="bg-gray-800/80 hover:bg-gray-700 text-white border border-gray-600 font-bold py-3 px-8 rounded-full text-lg transition-all backdrop-blur-sm"
-              >
-                Phim Sắp Ra Mắt
-              </button>
+                Xem Phim Sắp Chiếu
+              </a>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Trending Movies Section -->
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div class="flex justify-between items-end mb-10">
-          <div>
-            <h2 class="text-3xl font-black text-white uppercase tracking-tight">
-              Phim Đang Hot
-            </h2>
-            <div class="h-1 w-20 bg-brand-500 mt-2 rounded-full"></div>
-          </div>
-          <a
-            href="#"
-            class="text-brand-400 hover:text-brand-300 font-semibold flex items-center group"
-          >
-            Xem tất cả
-            <i
-              class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"
-            ></i>
-          </a>
-        </div>
+      <!-- Customer: phim sắp chiếu theo thể loại -->
+      <th:block th:if="${customerView}" th:replace="~{fragments/upcoming-movies :: upcoming-movies}"></th:block>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-          <!-- Movie Card 1 -->
-          <div
-            class="bg-gray-900 rounded-2xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 shadow-lg hover:shadow-brand-500/20"
-          >
-            <div class="relative aspect-[2/3] overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
-                alt="Movie"
-                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-              />
-              <div
-                class="absolute top-3 right-3 bg-brand-600 text-white text-xs font-bold px-2 py-1 rounded"
-              >
-                16+
-              </div>
-              <!-- Overlay on Hover -->
-              <div
-                class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6"
-              >
-                <button
-                  class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-2 px-4 rounded-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300"
-                >
-                  Đặt Vé Ngay
-                </button>
-              </div>
-            </div>
-            <div class="p-5">
-              <h3
-                class="text-lg font-bold text-white truncate group-hover:text-brand-400 transition-colors"
-              >
-                Oppenheimer
-              </h3>
-              <p class="text-sm text-gray-400 mt-1 flex items-center">
-                <i class="fas fa-clock mr-1 text-xs"></i> 180 phút
-              </p>
-            </div>
-          </div>
-
-          <!-- Movie Card 2 -->
-          <div
-            class="bg-gray-900 rounded-2xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 shadow-lg hover:shadow-brand-500/20"
-          >
-            <div class="relative aspect-[2/3] overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
-                alt="Movie"
-                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-              />
-              <div
-                class="absolute top-3 right-3 bg-brand-600 text-white text-xs font-bold px-2 py-1 rounded"
-              >
-                13+
-              </div>
-              <div
-                class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6"
-              >
-                <button
-                  class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-2 px-4 rounded-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300"
-                >
-                  Đặt Vé Ngay
-                </button>
-              </div>
-            </div>
-            <div class="p-5">
-              <h3
-                class="text-lg font-bold text-white truncate group-hover:text-brand-400 transition-colors"
-              >
-                Dune: Part Two
-              </h3>
-              <p class="text-sm text-gray-400 mt-1 flex items-center">
-                <i class="fas fa-clock mr-1 text-xs"></i> 166 phút
-              </p>
-            </div>
-          </div>
-
-          <!-- Movie Card 3 -->
-          <div
-            class="bg-gray-900 rounded-2xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 shadow-lg hover:shadow-brand-500/20"
-          >
-            <div class="relative aspect-[2/3] overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1596727147705-61a532a659bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
-                alt="Movie"
-                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-              />
-              <div
-                class="absolute top-3 right-3 bg-brand-600 text-white text-xs font-bold px-2 py-1 rounded"
-              >
-                13+
-              </div>
-              <div
-                class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6"
-              >
-                <button
-                  class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-2 px-4 rounded-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300"
-                >
-                  Đặt Vé Ngay
-                </button>
-              </div>
-            </div>
-            <div class="p-5">
-              <h3
-                class="text-lg font-bold text-white truncate group-hover:text-brand-400 transition-colors"
-              >
-                Spider-Man: No Way Home
-              </h3>
-              <p class="text-sm text-gray-400 mt-1 flex items-center">
-                <i class="fas fa-clock mr-1 text-xs"></i> 148 phút
-              </p>
-            </div>
-          </div>
-
-          <!-- Movie Card 4 -->
-          <div
-            class="bg-gray-900 rounded-2xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 shadow-lg hover:shadow-brand-500/20"
-          >
-            <div class="relative aspect-[2/3] overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1534809027769-6217b922d11f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
-                alt="Movie"
-                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-              />
-              <div
-                class="absolute top-3 right-3 bg-brand-600 text-white text-xs font-bold px-2 py-1 rounded"
-              >
-                18+
-              </div>
-              <div
-                class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6"
-              >
-                <button
-                  class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-2 px-4 rounded-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300"
-                >
-                  Đặt Vé Ngay
-                </button>
-              </div>
-            </div>
-            <div class="p-5">
-              <h3
-                class="text-lg font-bold text-white truncate group-hover:text-brand-400 transition-colors"
-              >
-                The Batman
-              </h3>
-              <p class="text-sm text-gray-400 mt-1 flex items-center">
-                <i class="fas fa-clock mr-1 text-xs"></i> 176 phút
-              </p>
-            </div>
+      <!-- Admin: shortcut quản trị -->
+      <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12" th:if="${!customerView}">
+        <div class="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-8 text-center">
+          <p class="text-amber-200 mb-4">Bạn đang đăng nhập với tài khoản quản trị.</p>
+          <div class="flex flex-wrap justify-center gap-3">
+            <a th:href="@{/admin/movies}" class="inline-flex items-center gap-2 px-6 py-3 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-semibold">
+              <i class="fas fa-film"></i> Quản lý phim
+            </a>
+            <a th:href="@{/admin/showtimes}" class="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-semibold">
+              <i class="fas fa-calendar-plus"></i> Lịch chiếu
+            </a>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
 
     <!-- Modals Fragment (Vùng dành cho Modals được inject vào layout) -->
     <div layout:fragment="modals">
+      <div
+        th:if="${accessDeniedMessage}"
+        data-auto-dismiss
+        class="fixed top-6 left-6 right-6 sm:left-auto sm:right-6 z-[200] max-w-sm bg-gray-900 border border-red-500/40 text-white text-sm rounded-2xl px-5 py-4 shadow-2xl"
+      >
+        <p class="font-bold text-red-400 text-xs uppercase mb-1">Không có quyền</p>
+        <p th:text="${accessDeniedMessage}" class="text-gray-300"></p>
+      </div>
+
+      <div
+        th:if="${errorMessage}"
+        data-auto-dismiss
+        class="fixed top-6 left-6 right-6 sm:left-auto sm:right-6 z-[200] max-w-sm bg-gray-900 border border-red-500/40 text-white text-sm rounded-2xl px-5 py-4 shadow-2xl"
+      >
+        <p class="font-bold text-red-400 text-xs uppercase mb-1">Thông báo</p>
+        <p th:text="${errorMessage}" class="text-gray-300"></p>
+      </div>
+
       <!-- Toast Notification -->
       <div
         id="toast-notification"
@@ -256,9 +117,7 @@
           <i class="fas fa-circle-check text-green-400 text-base"></i>
         </div>
         <div>
-          <p
-            class="font-bold text-green-400 text-xs uppercase tracking-wider mb-0.5"
-          >
+          <p class="font-bold text-green-400 text-xs uppercase tracking-wider mb-0.5">
             Thành công
           </p>
           <p th:text="${successMessage}" class="text-gray-300"></p>

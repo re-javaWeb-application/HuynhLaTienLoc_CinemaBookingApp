@@ -1,5 +1,6 @@
 package com.re.cinema_manager.interceptor;
 
+import com.re.cinema_manager.model.entity.Role;
 import com.re.cinema_manager.model.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,11 +24,12 @@ public class AdminInterceptor implements HandlerInterceptor {
         User loggedInUser =
                 (User) session.getAttribute("loggedInUser");
 
-        if (loggedInUser == null
-                || !loggedInUser.getRole().name().equals("ADMIN")) {
-
+        if (loggedInUser == null || loggedInUser.getRole() != Role.ADMIN) {
+            session.setAttribute(
+                    "accessDeniedMessage",
+                    "Bạn cần đăng nhập tài khoản Admin để truy cập khu vực quản trị."
+            );
             response.sendRedirect("/home");
-
             return false;
         }
 
