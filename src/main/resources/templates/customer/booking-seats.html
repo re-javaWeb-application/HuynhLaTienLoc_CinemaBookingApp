@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/index}">
+<head>
+  <title>Chọn ghế</title>
+</head>
+<body>
+<main layout:fragment="content">
+  <section class="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 animated-bg">
+    <div class="relative z-10 max-w-4xl mx-auto">
+      <a th:href="@{/home#phim-sap-chieu}" class="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-6">
+        <i class="fas fa-arrow-left"></i> Quay lại
+      </a>
+
+      <div th:if="${errorMessage}" class="mb-4 p-4 rounded-xl bg-red-500/15 border border-red-500/40 text-red-200 text-sm" th:text="${errorMessage}"></div>
+
+      <div th:if="${seatView.soldOut}"
+           class="mb-6 p-4 rounded-xl bg-red-500/15 border border-red-500/40 text-red-200 text-sm flex items-start gap-3">
+        <i class="fas fa-ticket text-xl mt-0.5"></i>
+        <div>
+          <p class="font-bold text-red-100">Hết vé</p>
+          <p class="mt-1">Suất này đã bán hết <span th:text="${seatView.bookedSeats}">0</span>/<span th:text="${seatView.totalSeats}">0</span> ghế.
+            Bạn vẫn xem được sơ đồ bên dưới nhưng không thể đặt thêm.</p>
+        </div>
+      </div>
+
+      <div class="rounded-3xl bg-cinema-card border border-white/5 shadow-card p-6 md:p-8 mb-6">
+        <h1 class="text-2xl font-bold text-white mb-2" th:text="${seatView.movieTitle}">Phim</h1>
+        <p class="text-gray-400 text-sm">
+          <span th:text="${seatView.roomName}">Phòng</span> ·
+          <span th:text="${#temporals.format(seatView.showtimeStart, 'dd/MM/yyyy HH:mm')}">Giờ</span> ·
+          <span th:text="${seatView.durationMinutes} + ' phút'">120 phút</span>
+        </p>
+        <p class="text-brand-400 font-semibold mt-2">
+          Giá vé: <span th:text="${#numbers.formatDecimal(seatView.standardPrice, 0, 'COMMA', 0, 'POINT')}">85,000</span> ₫ / ghế
+        </p>
+      </div>
+
+      <form th:action="@{/booking/{id}/pay(id=${seatView.showtimeId})}" method="post" id="pay-form"
+            th:attr="data-sold-out=${seatView.soldOut}">
+        <div class="rounded-3xl bg-cinema-card border border-white/5 p-6">
+          <h2 class="text-lg font-semibold text-white mb-4">Chọn ghế</h2>
+          <div th:if="${#lists.isEmpty(seatView.seats)}"
+               class="text-center py-12 text-amber-200/90 bg-amber-500/10 border border-amber-500/30 rounded-xl mb-4">
+            <i class="fas fa-chair text-2xl mb-3 block opacity-70"></i>
+            Phòng chiếu chưa có sơ đồ ghế. Vui lòng chọn suất khác hoặc liên hệ quản trị.
+          </div>
+          <div class="flex flex-wrap gap-3 justify-center" id="seat-grid" th:unless="${#lists.isEmpty(seatView.seats)}">
+            <label th:each="seat : ${seatView.seats}"
+                   th:classappend="${seat.booked} ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:ring-2 hover:ring-brand-500'"
+                   class="relative w-12 h-12 rounded-lg border border-white/20 flex items-center justify-center text-xs font-bold text-white transition-all seat-label">
+              <input type="checkbox" name="seatIds" th:value="${seat.id}"
+                     th:disabled="${seat.booked}"
+                     class="peer sr-only seat-checkbox"
+                     th:attr="data-price=${seatView.standardPrice}"/>
+              <span th:text="${seat.seatName}">A1</span>
+              <span th:if="${seat.booked}" class="absolute inset-0 flex items-center justify-center text-red-400 text-lg">×</span>
+            </label>
+          </div>
+
+          <p class="text-center text-gray-500 text-xs mt-4">Ghế xám = đã bán · Chọn ghế trống rồi thanh toán</p>
+
+          <div class="mt-8 flex flex-col gap-4 border-t border-white/10 pt-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <span class="text-gray-400 text-sm">Tổng tạm tính:</span>
+                <span id="total-display" class="text-2xl font-bold text-brand-400 ml-2">0 ₫</span>
+              </div>
+              <div th:unless="${seatView.soldOut}" class="flex flex-col gap-2">
+                <label class="text-gray-400 text-sm">Hình thức thanh toán</label>
+                <select name="paymentMethod" id="payment-method"
+                        class="bg-cinema-dark border border-white/10 rounded-xl px-4 py-2 text-white text-sm min-w-[260px]">
+                  <option value="CASH">Thanh toán online (tiền mặt/chuyển khoản)</option>
+                  <option value="AT_COUNTER">Thanh toán tại quầy — giữ ghế, chờ nhân viên xác nhận</option>
+                </select>
+              </div>
+            </div>
+            <button type="submit" id="btn-pay" disabled
+                    th:disabled="${seatView.soldOut}"
+                    th:classappend="${seatView.soldOut} ? 'hidden' : ''"
+                    class="w-full sm:w-auto self-end px-8 py-3 rounded-xl bg-gradient-to-r from-brand-600 to-purple-600 text-white font-bold disabled:opacity-40 disabled:cursor-not-allowed">
+              Xác nhận đặt vé
+            </button>
+            <p th:if="${seatView.soldOut}" class="text-sm text-red-300/90 self-end">Đã hết vé — không thể thanh toán thêm.</p>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <script th:inline="javascript">
+    (function () {
+      const price = /*[[${seatView.standardPrice}]]*/ 85000;
+      const checkboxes = document.querySelectorAll('.seat-checkbox:not(:disabled)');
+      const totalEl = document.getElementById('total-display');
+      const btnPay = document.getElementById('btn-pay');
+      const form = document.getElementById('pay-form');
+
+      function updateTotal() {
+        const n = document.querySelectorAll('.seat-checkbox:checked').length;
+        const total = n * price;
+        totalEl.textContent = total.toLocaleString('vi-VN') + ' ₫';
+        btnPay.disabled = n === 0;
+        document.querySelectorAll('.seat-label').forEach(function (lbl) {
+          const cb = lbl.querySelector('.seat-checkbox');
+          if (cb && cb.checked) lbl.classList.add('ring-2', 'ring-brand-500', 'bg-brand-600/30');
+          else if (cb && !cb.disabled) lbl.classList.remove('ring-2', 'ring-brand-500', 'bg-brand-600/30');
+        });
+      }
+
+      checkboxes.forEach(function (cb) {
+        cb.addEventListener('change', updateTotal);
+      });
+
+      form.addEventListener('submit', function (e) {
+        if (form.getAttribute('data-sold-out') === 'true') {
+          e.preventDefault();
+          alert('Suất chiếu đã hết vé.');
+          return;
+        }
+        const checked = document.querySelectorAll('.seat-checkbox:checked');
+        if (checked.length === 0) {
+          e.preventDefault();
+          alert('Vui lòng chọn ít nhất một ghế.');
+        }
+      });
+    })();
+  </script>
+</main>
+</body>
+</html>

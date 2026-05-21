@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/index}">
+<head>
+  <title>Hóa đơn</title>
+</head>
+<body>
+<main layout:fragment="content">
+  <section class="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 animated-bg">
+    <div class="relative z-10 max-w-2xl mx-auto">
+      <div class="rounded-3xl bg-cinema-card border shadow-card overflow-hidden"
+           th:classappend="${invoice.bookingStatus == 'PENDING'} ? 'border-amber-500/30' : 'border-emerald-500/30'">
+        <div class="px-8 py-6 text-center border-b border-white/10"
+             th:classappend="${invoice.bookingStatus == 'PENDING'} ? 'bg-amber-600/20' : 'bg-emerald-600/20'">
+          <i th:classappend="${invoice.bookingStatus == 'PENDING'} ? 'fas fa-clock text-amber-400' : 'fas fa-circle-check text-emerald-400'"
+             class="text-4xl mb-3"></i>
+          <h1 class="text-2xl font-bold text-white"
+              th:text="${invoice.bookingStatus == 'PENDING'} ? 'Đặt vé thành công — chờ thanh toán tại quầy' : 'Thanh toán thành công'">
+            Thành công
+          </h1>
+          <p class="text-sm mt-1 font-mono"
+             th:classappend="${invoice.bookingStatus == 'PENDING'} ? 'text-amber-200/80' : 'text-emerald-200/80'"
+             th:text="${invoice.bookingCode}">BK-1</p>
+          <p th:if="${invoice.bookingStatus == 'PENDING'}" class="text-amber-100/70 text-xs mt-2">
+            Vui lòng đến quầy vé với mã trên. Nhân viên sẽ xác nhận thanh toán và in vé.
+          </p>
+        </div>
+        <div class="p-8 space-y-4 text-sm">
+          <div class="flex justify-between"><span class="text-gray-500">Phim</span><span class="text-white font-medium" th:text="${invoice.movieTitle}"></span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Rạp</span><span class="text-white" th:text="${invoice.cinemaName}"></span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Phòng</span><span class="text-white" th:text="${invoice.roomName}"></span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Suất chiếu</span><span class="text-white" th:text="${#temporals.format(invoice.showtimeStart, 'dd/MM/yyyy HH:mm')}"></span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Ghế</span><span class="text-white font-medium" th:text="${#strings.listJoin(invoice.seatNames, ', ')}"></span></div>
+          <div class="flex justify-between border-t border-white/10 pt-4">
+            <span class="text-gray-500">Tổng tiền</span>
+            <span class="text-xl font-bold text-brand-400" th:text="${#numbers.formatDecimal(invoice.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+          </div>
+          <div class="flex justify-between"><span class="text-gray-500">Trạng thái</span><span class="text-white" th:text="${invoice.bookingStatus}"></span></div>
+          <div class="flex justify-between" th:if="${invoice.paymentStatus != null}">
+            <span class="text-gray-500">Thanh toán</span>
+            <span class="text-white" th:text="${invoice.paymentStatus} + (${invoice.paymentMethod != null} ? ' · ' + ${invoice.paymentMethod} : '')"></span>
+          </div>
+        </div>
+        <div class="px-8 pb-8 flex flex-col sm:flex-row gap-3">
+          <a th:href="@{/booking/history}" class="flex-1 text-center py-3 rounded-xl bg-white/10 text-white font-semibold hover:bg-white/15">Lịch sử vé</a>
+          <a th:href="@{/home}" class="flex-1 text-center py-3 rounded-xl bg-gradient-to-r from-brand-600 to-purple-600 text-white font-semibold">Về trang chủ</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

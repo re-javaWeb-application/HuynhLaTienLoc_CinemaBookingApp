@@ -6,6 +6,7 @@ import com.re.cinema_manager.model.entity.Genre;
 import com.re.cinema_manager.model.entity.Showtime;
 import com.re.cinema_manager.repository.ShowtimeRepository;
 import com.re.cinema_manager.service.CustomerHomeService;
+import com.re.cinema_manager.service.ShowtimeAvailabilityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class CustomerHomeServiceImpl implements CustomerHomeService {
     private static final String NO_GENRE_NAME = "Khác";
 
     private final ShowtimeRepository showtimeRepository;
+    private final ShowtimeAvailabilityService showtimeAvailabilityService;
 
     @Override
     public List<GenreSectionView> getUpcomingMoviesByGenre() {
@@ -85,6 +87,11 @@ public class CustomerHomeServiceImpl implements CustomerHomeService {
 
     private UpcomingMovieView toView(Showtime showtime, long genreId, String genreName) {
         var movie = showtime.getMovie();
+        Long roomId = showtime.getRoom().getId();
+        long total = showtimeAvailabilityService.countTotalSeatsInRoom(roomId);
+        long booked = showtimeAvailabilityService.countBookedSeats(showtime.getId());
+        boolean soldOut = showtimeAvailabilityService.isSoldOut(showtime.getId(), roomId);
+
         return UpcomingMovieView.builder()
                 .showtimeId(showtime.getId())
                 .movieId(movie.getId())
@@ -96,6 +103,9 @@ public class CustomerHomeServiceImpl implements CustomerHomeService {
                 .genreName(genreName)
                 .startTime(showtime.getStartTime())
                 .roomName(showtime.getRoom().getRoomName())
+                .soldOut(soldOut)
+                .totalSeats((int) total)
+                .bookedSeats((int) booked)
                 .build();
     }
 }

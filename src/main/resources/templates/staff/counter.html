@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/index}">
+<head>
+  <title>Quầy vé — Nhân viên</title>
+</head>
+<body>
+<main layout:fragment="content">
+  <section class="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 animated-bg">
+    <div class="relative z-10 max-w-xl mx-auto">
+      <div class="mb-8 text-center">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-cyan-500/20 border border-cyan-500/30 mb-4">
+          <i class="fas fa-cash-register text-3xl text-cyan-400"></i>
+        </div>
+        <h1 class="text-3xl font-bold text-white">Quầy vé nhân viên</h1>
+        <p class="text-gray-400 text-sm mt-2">Tra cứu mã vé (BK-123), xác nhận thanh toán và in vé cho khách.</p>
+      </div>
+
+      <div th:if="${errorMessage}" class="mb-4 p-4 rounded-xl bg-red-500/15 border border-red-500/40 text-red-200 text-sm" th:text="${errorMessage}"></div>
+      <div th:if="${successMessage}" class="mb-4 p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-200 text-sm" th:text="${successMessage}"></div>
+
+      <form th:action="@{/staff/counter/search}" method="get" class="rounded-3xl bg-cinema-card border border-cyan-500/20 p-8 shadow-card">
+        <label class="block text-sm font-medium text-gray-300 mb-2">Mã đặt vé</label>
+        <div class="flex gap-3">
+          <input type="text" name="code" required placeholder="BK-12 hoặc 12"
+                 class="flex-1 bg-cinema-dark border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:ring-2 focus:ring-cyan-500/50"/>
+          <button type="submit" class="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-brand-600 text-white font-bold hover:shadow-neon">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+        <p class="text-xs text-gray-500 mt-3">Khách chọn &quot;Thanh toán tại quầy&quot; sẽ có trạng thái PENDING — nhân viên xác nhận rồi in vé.</p>
+      </form>
+    </div>
+  </section>
+</main>
+</body>
+</html>

@@ -44,12 +44,22 @@
               onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27600%27%3E%3Crect fill=%27%231a1a2e%27 width=%27400%27 height=%27600%27/%3E%3Ctext x=%27200%27 y=%27300%27 fill=%27%236b7280%27 font-size=%2720%27 text-anchor=%27middle%27%3EN/A%3C/text%3E%3C/svg%3E'"
             />
             <span class="absolute top-3 left-3 bg-purple-600/90 text-white text-xs font-bold px-2 py-1 rounded" th:text="${movie.genreName}"></span>
+            <span th:if="${movie.soldOut}"
+                  class="absolute top-3 right-3 bg-red-600/95 text-white text-xs font-bold px-2 py-1 rounded shadow-lg">
+              Hết vé
+            </span>
             <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-              <a
+              <a th:if="${!movie.soldOut}"
                 th:href="@{/booking/{id}(id=${movie.showtimeId})}"
                 class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-2.5 px-4 rounded-lg text-center text-sm transform translate-y-4 group-hover:translate-y-0 transition-all duration-300"
               >
                 <i class="fas fa-ticket mr-1"></i> Đặt vé ngay
+              </a>
+              <a th:if="${movie.soldOut}"
+                th:href="@{/booking/{id}(id=${movie.showtimeId})}"
+                class="w-full bg-gray-600 hover:bg-gray-500 text-white font-bold py-2.5 px-4 rounded-lg text-center text-sm transform translate-y-4 group-hover:translate-y-0 transition-all duration-300"
+              >
+                <i class="fas fa-chair mr-1"></i> Xem sơ đồ ghế
               </a>
             </div>
           </div>
@@ -70,11 +80,23 @@
                 <span th:text="${movie.roomName}"></span>
               </p>
             </div>
-            <a
+            <p th:if="${movie.soldOut}" class="mt-2 text-xs text-red-400 font-semibold">
+              <i class="fas fa-ban mr-1"></i> Hết vé · Còn 0/<span th:text="${movie.totalSeats}">0</span> ghế trống
+            </p>
+            <p th:unless="${movie.soldOut}" class="mt-2 text-xs text-gray-500">
+              Còn <span class="text-emerald-400 font-medium" th:text="${movie.totalSeats - movie.bookedSeats}">0</span>/<span th:text="${movie.totalSeats}">0</span> ghế trống
+            </p>
+            <a th:if="${!movie.soldOut}"
               th:href="@{/booking/{id}(id=${movie.showtimeId})}"
               class="mt-4 block w-full text-center bg-gradient-to-r from-brand-600 to-purple-600 hover:from-brand-500 hover:to-purple-500 text-white font-semibold py-2.5 rounded-lg text-sm transition-all"
             >
               Đặt vé ngay
+            </a>
+            <a th:if="${movie.soldOut}"
+              th:href="@{/booking/{id}(id=${movie.showtimeId})}"
+              class="mt-4 block w-full text-center bg-white/10 hover:bg-white/15 text-gray-200 font-semibold py-2.5 rounded-lg text-sm transition-all border border-white/10"
+            >
+              Xem sơ đồ ghế (Hết vé)
             </a>
           </div>
         </div>

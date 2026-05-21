@@ -24,4 +24,8 @@ public class UpcomingMovieView {
     private String genreName;
     private LocalDateTime startTime;
     private String roomName;
+    /** CORE-08: true khi mọi ghế trong phòng đã có vé (không tính booking CANCELLED). */
+    private boolean soldOut;
+    private int totalSeats;
+    private int bookedSeats;
 }

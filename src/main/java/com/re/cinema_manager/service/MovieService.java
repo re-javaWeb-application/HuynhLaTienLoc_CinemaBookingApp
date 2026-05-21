@@ -1,27 +1,26 @@
 package com.re.cinema_manager.service;
 
 import com.re.cinema_manager.model.dto.MovieRequestDTO;
-import com.re.cinema_manager.model.entity.Movie;
+import com.re.cinema_manager.model.dto.admin.GenreOptionDto;
+import com.re.cinema_manager.model.dto.admin.MovieListItemDto;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
 
 public interface MovieService {
 
-    //Tra ve danh sach film
-    List<Movie> showAllMovie();
+    List<MovieListItemDto> listMoviesForAdmin();
 
-    //them 1 bo phim moi
-    @Transactional
-    Movie createMovie(MovieRequestDTO dto);
+    List<GenreOptionDto> listGenreOptions();
 
-    //
-    Movie getMovieById(Long movieId);
+    MovieRequestDTO getMovieRequestById(Long movieId);
 
     @Transactional
-    Movie updateMovie(Long movieId, MovieRequestDTO dto);
+    void createMovie(MovieRequestDTO dto);
+
+    @Transactional
+    void updateMovie(Long movieId, MovieRequestDTO dto);
 
     @Transactional
     void deletedMovie(Long movieId);
-
 }

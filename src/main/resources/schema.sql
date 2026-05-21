@@ -74,3 +74,41 @@ CREATE TABLE IF NOT EXISTS showtimes (
         FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE RESTRICT,
     INDEX idx_showtime_room_start (room_id, start_time)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 8. ĐẶT VÉ (CORE-06)
+CREATE TABLE IF NOT EXISTS bookings (
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    user_id      INT            NOT NULL,
+    showtime_id  INT            NOT NULL,
+    total_amount DECIMAL(12, 2) NOT NULL,
+    status       ENUM('PENDING', 'PAID', 'CANCELLED') NOT NULL DEFAULT 'PENDING',
+    created_at   TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_booking_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_booking_showtime FOREIGN KEY (showtime_id) REFERENCES showtimes(id) ON DELETE RESTRICT,
+    INDEX idx_booking_user_created (user_id, created_at DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 9. VÉ / GHẾ ĐÃ ĐẶT (1 vé = 1 ghế trong 1 suất) — UNIQUE chống double booking
+CREATE TABLE IF NOT EXISTS tickets (
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id   INT            NOT NULL,
+    showtime_id  INT            NOT NULL,
+    seat_id      INT            NOT NULL,
+    unit_price   DECIMAL(12, 2) NOT NULL,
+    CONSTRAINT fk_ticket_booking FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE,
+    CONSTRAINT fk_ticket_showtime FOREIGN KEY (showtime_id) REFERENCES showtimes(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_ticket_seat FOREIGN KEY (seat_id) REFERENCES seats(id) ON DELETE RESTRICT,
+    CONSTRAINT uk_ticket_showtime_seat UNIQUE (showtime_id, seat_id),
+    INDEX idx_ticket_booking (booking_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 10. THANH TOÁN (CORE-06 — 1-1 với booking)
+CREATE TABLE IF NOT EXISTS payments (
+    id              INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id      INT            NOT NULL UNIQUE,
+    amount          DECIMAL(12, 2) NOT NULL,
+    payment_method  VARCHAR(50)    NOT NULL DEFAULT 'CASH',
+    status          ENUM('SUCCESS', 'FAILED') NOT NULL,
+    paid_at         TIMESTAMP      NULL,
+    CONSTRAINT fk_payment_booking FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

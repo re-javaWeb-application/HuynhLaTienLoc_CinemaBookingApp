@@ -1,85 +1,70 @@
 package com.re.cinema_manager.controller;
 
 import com.re.cinema_manager.model.dto.ShowtimeRequestDTO;
-import com.re.cinema_manager.model.entity.Showtime;
-import com.re.cinema_manager.repository.MovieRepository;
-import com.re.cinema_manager.repository.RoomRepository;
 import com.re.cinema_manager.service.ShowtimeService;
 import com.re.cinema_manager.service.showtime.ShowtimeConflictChecker;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-
-/**
- * CORE-05 — Admin quản lý suất chiếu.
- * URL: /admin/showtimes (được bảo vệ bởi {@link com.re.cinema_manager.interceptor.AdminInterceptor}).
- */
 @Controller
 @RequestMapping("/admin/showtimes")
 @RequiredArgsConstructor
 public class ShowtimeController {
 
     private final ShowtimeService showtimeService;
-    private final MovieRepository movieRepository;
-    private final RoomRepository roomRepository;
 
-    /** Danh sách lịch chiếu — bước xem sau khi tạo thành công. */
     @GetMapping
     public String listShowtimes(Model model) {
-        List<Showtime> showtimes = showtimeService.findAllShowtimes();
-        model.addAttribute("showtimes", showtimes);
+        model.addAttribute("showtimes", showtimeService.listShowtimesForAdmin());
         model.addAttribute("cleanupBufferMinutes", ShowtimeConflictChecker.CLEANUP_BUFFER_MINUTES);
         return "admin/showtime-list";
     }
 
-    /** Form tạo suất: Phim + Phòng + Giờ bắt đầu. */
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         if (!model.containsAttribute("showtimeDto")) {
             model.addAttribute("showtimeDto", new ShowtimeRequestDTO());
         }
-        populateDropdowns(model);
+        populateFormOptions(model);
         return "admin/showtime-form";
     }
 
-    /**
-     * Xử lý POST tạo suất — gọi service (có kiểm tra xung đột phòng).
-     * Thất bại → flash lỗi + quay lại form; thành công → redirect danh sách.
-     */
     @PostMapping("/create")
-    public String processCreate(@ModelAttribute("showtimeDto") ShowtimeRequestDTO dto,
-                              RedirectAttributes redirectAttributes) {
+    public String processCreate(@Valid @ModelAttribute("showtimeDto") ShowtimeRequestDTO dto,
+                                BindingResult bindingResult,
+                                Model model,
+                                RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            populateFormOptions(model);
+            model.addAttribute("validationError", "Vui lòng kiểm tra lại các trường bắt buộc.");
+            return "admin/showtime-form";
+        }
         try {
             showtimeService.createShowtime(dto);
             redirectAttributes.addFlashAttribute("successMessage", "Tạo lịch chiếu thành công!");
+            return "redirect:/admin/showtimes";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            redirectAttributes.addFlashAttribute("showtimeDto", dto);
-            return "redirect:/admin/showtimes/create";
+            populateFormOptions(model);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "admin/showtime-form";
         }
-        return "redirect:/admin/showtimes";
     }
 
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
             if (!model.containsAttribute("showtimeDto")) {
-                Showtime showtime = showtimeService.getShowtimeById(id);
-                ShowtimeRequestDTO dto = ShowtimeRequestDTO.builder()
-                        .movieId(showtime.getMovie().getId())
-                        .roomId(showtime.getRoom().getId())
-                        .startTime(showtime.getStartTime())
-                        .build();
-                model.addAttribute("showtimeDto", dto);
+                model.addAttribute("showtimeDto", showtimeService.getShowtimeRequestById(id));
             }
             if (!model.containsAttribute("showtimeId")) {
                 model.addAttribute("showtimeId", id);
             }
-            populateDropdowns(model);
+            populateFormOptions(model);
             return "admin/showtime-form";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
@@ -89,18 +74,25 @@ public class ShowtimeController {
 
     @PostMapping("/edit/{id}")
     public String processUpdate(@PathVariable Long id,
-                                @ModelAttribute("showtimeDto") ShowtimeRequestDTO dto,
+                                @Valid @ModelAttribute("showtimeDto") ShowtimeRequestDTO dto,
+                                BindingResult bindingResult,
+                                Model model,
                                 RedirectAttributes redirectAttributes) {
+        model.addAttribute("showtimeId", id);
+        if (bindingResult.hasErrors()) {
+            populateFormOptions(model);
+            model.addAttribute("validationError", "Vui lòng kiểm tra lại các trường bắt buộc.");
+            return "admin/showtime-form";
+        }
         try {
             showtimeService.updateShowtime(id, dto);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật lịch chiếu thành công!");
+            return "redirect:/admin/showtimes";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            redirectAttributes.addFlashAttribute("showtimeDto", dto);
-            redirectAttributes.addFlashAttribute("showtimeId", id);
-            return "redirect:/admin/showtimes/edit/" + id;
+            populateFormOptions(model);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "admin/showtime-form";
         }
-        return "redirect:/admin/showtimes";
     }
 
     @GetMapping("/delete/{id}")
@@ -114,8 +106,8 @@ public class ShowtimeController {
         return "redirect:/admin/showtimes";
     }
 
-    private void populateDropdowns(Model model) {
-        model.addAttribute("movies", movieRepository.findAll());
-        model.addAttribute("rooms", roomRepository.findAll());
+    private void populateFormOptions(Model model) {
+        model.addAttribute("movies", showtimeService.listMovieOptions());
+        model.addAttribute("rooms", showtimeService.listRoomOptions());
     }
 }

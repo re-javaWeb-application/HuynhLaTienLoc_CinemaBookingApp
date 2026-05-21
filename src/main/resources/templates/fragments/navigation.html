@@ -22,20 +22,37 @@
                 </a>
             </div>
 
-            <!-- Desktop Nav Links -->
+            <!-- Desktop Nav Links — theo vai trò -->
             <nav class="hidden lg:flex items-center space-x-1">
-                <a th:href="@{/home#phim-sap-chieu}" class="relative text-gray-300 hover:text-white px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-white/5 neon-underline">
-                    <i class="fas fa-fire text-brand-400 mr-1.5 text-xs"></i> Phim Sắp Chiếu
-                </a>
-                <a th:href="@{/home#phim-sap-chieu}" class="relative text-gray-300 hover:text-white px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-white/5 neon-underline">
-                    <i class="fas fa-calendar text-purple-400 mr-1.5 text-xs"></i> Lịch Chiếu
-                </a>
-                <a href="#" class="relative text-gray-300 hover:text-white px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-white/5 neon-underline">
-                    <i class="fas fa-tags text-amber-400 mr-1.5 text-xs"></i> Khuyến Mãi
-                </a>
-                <a href="#" class="relative text-gray-300 hover:text-white px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-white/5 neon-underline">
-                    <i class="fas fa-newspaper text-cyan-400 mr-1.5 text-xs"></i> Tin Tức
-                </a>
+                <!-- Khách hàng & khách chưa đăng nhập -->
+                <th:block th:if="${session.loggedInUser == null or session.loggedInUser.role.name() == 'CUSTOMER'}">
+                    <a th:href="@{/home#phim-sap-chieu}" class="relative text-gray-300 hover:text-white px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-white/5 neon-underline">
+                        <i class="fas fa-fire text-brand-400 mr-1.5 text-xs"></i> Phim Sắp Chiếu
+                    </a>
+                    <a th:if="${session.loggedInUser != null}"
+                       th:href="@{/booking/history}"
+                       class="relative text-gray-300 hover:text-white px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-white/5 neon-underline">
+                        <i class="fas fa-ticket text-emerald-400 mr-1.5 text-xs"></i> Vé của tôi
+                    </a>
+                </th:block>
+                <!-- Nhân viên -->
+                <th:block th:if="${session.loggedInUser != null and session.loggedInUser.role.name() == 'STAFF'}">
+                    <a th:href="@{/staff/counter}" class="relative text-cyan-300 hover:text-white px-4 py-2 text-sm font-semibold transition-all duration-300 rounded-lg hover:bg-cyan-500/10 border border-cyan-500/20">
+                        <i class="fas fa-cash-register mr-1.5 text-xs"></i> Quầy vé
+                    </a>
+                </th:block>
+                <!-- Admin -->
+                <th:block th:if="${session.loggedInUser != null and session.loggedInUser.role.name() == 'ADMIN'}">
+                    <a th:href="@{/admin/movies}" class="relative text-amber-300 hover:text-white px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-amber-500/10">
+                        <i class="fas fa-film mr-1.5 text-xs"></i> Phim
+                    </a>
+                    <a th:href="@{/admin/showtimes}" class="relative text-purple-300 hover:text-white px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-purple-500/10">
+                        <i class="fas fa-calendar-plus mr-1.5 text-xs"></i> Lịch chiếu
+                    </a>
+                    <a th:href="@{/admin/reports}" class="relative text-emerald-300 hover:text-white px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-emerald-500/10">
+                        <i class="fas fa-chart-line mr-1.5 text-xs"></i> Doanh thu
+                    </a>
+                </th:block>
             </nav>
 
             <!-- Auth Buttons + Mobile Toggle -->
@@ -53,16 +70,14 @@
 
                 <!-- Đã đăng nhập -->
                 <div th:if="${session.loggedInUser != null}" class="hidden md:flex items-center space-x-3">
-                    <a th:if="${session.loggedInUser.role.name() == 'ADMIN'}"
-                       th:href="@{/admin/movies}"
-                       class="text-amber-400 hover:text-amber-300 text-sm font-semibold py-2.5 px-4 rounded-xl hover:bg-amber-500/10 border border-amber-500/20 transition-all duration-300">
-                        <i class="fas fa-film mr-1.5"></i> Quản lý phim
-                    </a>
-                    <a th:if="${session.loggedInUser.role.name() == 'ADMIN'}"
-                       th:href="@{/admin/showtimes}"
-                       class="text-purple-400 hover:text-purple-300 text-sm font-semibold py-2.5 px-4 rounded-xl hover:bg-purple-500/10 border border-purple-500/20 transition-all duration-300">
-                        <i class="fas fa-calendar-plus mr-1.5"></i> Lịch chiếu
-                    </a>
+                    <span th:if="${session.loggedInUser.role.name() == 'STAFF'}"
+                          class="text-xs text-cyan-400/90 font-semibold px-2 py-1 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
+                        Nhân viên
+                    </span>
+                    <span th:if="${session.loggedInUser.role.name() == 'ADMIN'}"
+                          class="text-xs text-amber-400/90 font-semibold px-2 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                        Admin
+                    </span>
                     <div class="flex items-center gap-3 py-2 px-4 rounded-xl bg-white/5 border border-white/5">
                         <div class="w-8 h-8 rounded-full bg-gradient-to-br from-brand-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
                             <span th:text="${#strings.substring(session.loggedInUser.username, 0, 1).toUpperCase()}">U</span>
@@ -91,17 +106,19 @@
     <div id="mobile-menu" class="lg:hidden hidden">
         <div class="absolute top-full left-0 right-0 glass border-t border-white/5 shadow-2xl animate-slide-down">
             <div class="max-w-7xl mx-auto px-4 py-6 space-y-2">
-                <a th:href="@{/home#phim-sap-chieu}" class="flex items-center gap-3 text-gray-300 hover:text-white py-3 px-4 rounded-xl hover:bg-white/5 transition-all text-sm font-medium">
-                    <i class="fas fa-fire text-brand-400 w-5 text-center"></i> Phim Sắp Chiếu
+                <th:block th:if="${session.loggedInUser == null or session.loggedInUser.role.name() == 'CUSTOMER'}">
+                    <a th:href="@{/home#phim-sap-chieu}" class="flex items-center gap-3 text-gray-300 hover:text-white py-3 px-4 rounded-xl hover:bg-white/5 transition-all text-sm font-medium">
+                        <i class="fas fa-fire text-brand-400 w-5 text-center"></i> Phim Sắp Chiếu
+                    </a>
+                    <a th:if="${session.loggedInUser != null}" th:href="@{/booking/history}" class="flex items-center gap-3 text-gray-300 hover:text-white py-3 px-4 rounded-xl hover:bg-white/5 transition-all text-sm font-medium">
+                        <i class="fas fa-ticket text-emerald-400 w-5 text-center"></i> Vé của tôi
+                    </a>
+                </th:block>
+                <a th:if="${session.loggedInUser != null and session.loggedInUser.role.name() == 'STAFF'}" th:href="@{/staff/counter}" class="flex items-center gap-3 text-cyan-300 hover:text-white py-3 px-4 rounded-xl hover:bg-cyan-500/10 transition-all text-sm font-medium">
+                    <i class="fas fa-cash-register w-5 text-center"></i> Quầy vé
                 </a>
-                <a th:href="@{/home#phim-sap-chieu}" class="flex items-center gap-3 text-gray-300 hover:text-white py-3 px-4 rounded-xl hover:bg-white/5 transition-all text-sm font-medium">
-                    <i class="fas fa-calendar text-purple-400 w-5 text-center"></i> Lịch Chiếu
-                </a>
-                <a href="#" class="flex items-center gap-3 text-gray-300 hover:text-white py-3 px-4 rounded-xl hover:bg-white/5 transition-all text-sm font-medium">
-                    <i class="fas fa-tags text-amber-400 w-5 text-center"></i> Khuyến Mãi
-                </a>
-                <a href="#" class="flex items-center gap-3 text-gray-300 hover:text-white py-3 px-4 rounded-xl hover:bg-white/5 transition-all text-sm font-medium">
-                    <i class="fas fa-newspaper text-cyan-400 w-5 text-center"></i> Tin Tức
+                <a th:if="${session.loggedInUser != null and session.loggedInUser.role.name() == 'ADMIN'}" th:href="@{/admin/reports}" class="flex items-center gap-3 text-emerald-300 hover:text-white py-3 px-4 rounded-xl hover:bg-emerald-500/10 transition-all text-sm font-medium">
+                    <i class="fas fa-chart-line w-5 text-center"></i> Báo cáo doanh thu
                 </a>
                 <div class="border-t border-white/5 pt-4 mt-4">
                     <div th:if="${session.loggedInUser == null}" class="space-y-2">

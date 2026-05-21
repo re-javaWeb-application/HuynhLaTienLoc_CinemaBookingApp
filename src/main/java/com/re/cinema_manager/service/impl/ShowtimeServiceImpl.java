@@ -1,6 +1,9 @@
 package com.re.cinema_manager.service.impl;
 
 import com.re.cinema_manager.model.dto.ShowtimeRequestDTO;
+import com.re.cinema_manager.model.dto.admin.MovieOptionDto;
+import com.re.cinema_manager.model.dto.admin.RoomOptionDto;
+import com.re.cinema_manager.model.dto.admin.ShowtimeListItemDto;
 import com.re.cinema_manager.model.entity.Movie;
 import com.re.cinema_manager.model.entity.Room;
 import com.re.cinema_manager.model.entity.Showtime;
@@ -37,19 +40,55 @@ public class ShowtimeServiceImpl implements ShowtimeService {
     private final RoomRepository roomRepository;
 
     @Override
-    public List<Showtime> findAllShowtimes() {
-        return showtimeRepository.findAllWithMovieAndRoom();
+    public List<ShowtimeListItemDto> listShowtimesForAdmin() {
+        return showtimeRepository.findAllWithMovieAndRoom().stream()
+                .map(st -> ShowtimeListItemDto.builder()
+                        .id(st.getId())
+                        .movieTitle(st.getMovie().getTitle())
+                        .movieDurationMinutes(st.getMovie().getDurationMinutes())
+                        .roomName(st.getRoom().getRoomName())
+                        .startTime(st.getStartTime())
+                        .roomFreeAt(ShowtimeConflictChecker.computeRoomFreeAt(
+                                st.getStartTime(), st.getMovie().getDurationMinutes()))
+                        .build())
+                .toList();
     }
 
     @Override
-    public Showtime getShowtimeById(Long id) {
-        return showtimeRepository.findByIdWithMovieAndRoom(id)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy suất chiếu với ID: " + id));
+    public List<MovieOptionDto> listMovieOptions() {
+        return movieRepository.findAll().stream()
+                .map(m -> MovieOptionDto.builder()
+                        .id(m.getId())
+                        .title(m.getTitle())
+                        .durationMinutes(m.getDurationMinutes())
+                        .build())
+                .toList();
+    }
+
+    @Override
+    public List<RoomOptionDto> listRoomOptions() {
+        return roomRepository.findAll().stream()
+                .map(r -> RoomOptionDto.builder()
+                        .id(r.getId())
+                        .roomName(r.getRoomName())
+                        .capacity(r.getCapacity())
+                        .build())
+                .toList();
+    }
+
+    @Override
+    public ShowtimeRequestDTO getShowtimeRequestById(Long id) {
+        Showtime showtime = loadShowtimeById(id);
+        return ShowtimeRequestDTO.builder()
+                .movieId(showtime.getMovie().getId())
+                .roomId(showtime.getRoom().getId())
+                .startTime(showtime.getStartTime())
+                .build();
     }
 
     @Override
     @Transactional
-    public Showtime createShowtime(ShowtimeRequestDTO dto) {
+    public void createShowtime(ShowtimeRequestDTO dto) {
         validateRequest(dto);
 
         Movie movie = loadMovie(dto.getMovieId());
@@ -64,15 +103,15 @@ public class ShowtimeServiceImpl implements ShowtimeService {
                 .startTime(dto.getStartTime())
                 .build();
 
-        return showtimeRepository.save(showtime);
+        showtimeRepository.save(showtime);
     }
 
     @Override
     @Transactional
-    public Showtime updateShowtime(Long id, ShowtimeRequestDTO dto) {
+    public void updateShowtime(Long id, ShowtimeRequestDTO dto) {
         validateRequest(dto);
 
-        Showtime existing = getShowtimeById(id);
+        Showtime existing = loadShowtimeById(id);
         Movie movie = loadMovie(dto.getMovieId());
         Room room = loadRoom(dto.getRoomId());
 
@@ -83,7 +122,12 @@ public class ShowtimeServiceImpl implements ShowtimeService {
         existing.setRoom(room);
         existing.setStartTime(dto.getStartTime());
 
-        return showtimeRepository.save(existing);
+        showtimeRepository.save(existing);
+    }
+
+    private Showtime loadShowtimeById(Long id) {
+        return showtimeRepository.findByIdWithMovieAndRoom(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy suất chiếu với ID: " + id));
     }
 
     @Override

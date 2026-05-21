@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/index}">
+<head>
+  <title>Báo cáo doanh thu</title>
+</head>
+<body>
+<main layout:fragment="content">
+  <section class="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 animated-bg">
+    <div class="relative z-10 max-w-6xl mx-auto">
+      <div class="mb-10">
+        <h1 class="text-4xl font-display font-bold text-white">Báo cáo doanh thu</h1>
+        <p class="text-gray-400 text-sm mt-1">Thống kê từ thanh toán thành công (payments.status = SUCCESS)</p>
+      </div>
+
+      <form th:action="@{/admin/reports}" method="get" class="flex flex-wrap gap-4 items-end mb-8 p-6 rounded-2xl bg-cinema-card border border-white/5">
+        <div>
+          <label class="block text-xs text-gray-400 mb-1">Từ ngày</label>
+          <input type="date" name="from" th:value="${fromDate}" class="bg-cinema-dark border border-white/10 rounded-lg px-3 py-2 text-white text-sm"/>
+        </div>
+        <div>
+          <label class="block text-xs text-gray-400 mb-1">Đến ngày</label>
+          <input type="date" name="to" th:value="${toDate}" class="bg-cinema-dark border border-white/10 rounded-lg px-3 py-2 text-white text-sm"/>
+        </div>
+        <button type="submit" class="px-6 py-2 rounded-lg bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-500">
+          <i class="fas fa-filter mr-1"></i> Lọc
+        </button>
+      </form>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+        <div class="rounded-2xl bg-cinema-card border border-emerald-500/20 p-6">
+          <p class="text-gray-400 text-sm">Tổng doanh thu</p>
+          <p class="text-3xl font-bold text-emerald-400 mt-1" th:text="${#numbers.formatDecimal(report.totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0</p>
+        </div>
+        <div class="rounded-2xl bg-cinema-card border border-white/5 p-6">
+          <p class="text-gray-400 text-sm">Số giao dịch thành công</p>
+          <p class="text-3xl font-bold text-white mt-1" th:text="${report.totalPaidBookings}">0</p>
+        </div>
+        <div class="rounded-2xl bg-cinema-card border border-red-500/20 p-6">
+          <p class="text-gray-400 text-sm">Đơn đã hủy (trong kỳ)</p>
+          <p class="text-3xl font-bold text-red-400 mt-1" th:text="${report.cancelledBookingsInRange}">0</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="rounded-2xl bg-cinema-card border border-white/5 overflow-hidden">
+          <h2 class="px-6 py-4 text-lg font-semibold text-white border-b border-white/5">Theo ngày</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="text-gray-400 bg-white/5">
+                <tr><th class="text-left px-4 py-3">Ngày</th><th class="text-right px-4 py-3">Doanh thu</th><th class="text-right px-4 py-3">GD</th></tr>
+              </thead>
+              <tbody>
+                <tr th:each="row : ${report.dailyRows}" class="border-t border-white/5">
+                  <td class="px-4 py-3 text-white" th:text="${#temporals.format(row.date, 'dd/MM/yyyy')}"></td>
+                  <td class="px-4 py-3 text-right text-emerald-400" th:text="${#numbers.formatDecimal(row.revenue, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                  <td class="px-4 py-3 text-right text-gray-300" th:text="${row.paymentCount}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(report.dailyRows)}">
+                  <td colspan="3" class="px-4 py-8 text-center text-gray-500">Không có dữ liệu trong kỳ</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="rounded-2xl bg-cinema-card border border-white/5 overflow-hidden">
+          <h2 class="px-6 py-4 text-lg font-semibold text-white border-b border-white/5">Theo tháng</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="text-gray-400 bg-white/5">
+                <tr><th class="text-left px-4 py-3">Tháng</th><th class="text-right px-4 py-3">Doanh thu</th><th class="text-right px-4 py-3">GD</th></tr>
+              </thead>
+              <tbody>
+                <tr th:each="row : ${report.monthlyRows}" class="border-t border-white/5">
+                  <td class="px-4 py-3 text-white" th:text="${row.monthLabel}"></td>
+                  <td class="px-4 py-3 text-right text-emerald-400" th:text="${#numbers.formatDecimal(row.revenue, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                  <td class="px-4 py-3 text-right text-gray-300" th:text="${row.paymentCount}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(report.monthlyRows)}">
+                  <td colspan="3" class="px-4 py-8 text-center text-gray-500">Không có dữ liệu trong kỳ</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

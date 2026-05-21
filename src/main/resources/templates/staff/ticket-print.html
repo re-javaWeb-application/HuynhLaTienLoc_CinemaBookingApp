@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/index}">
+<head>
+  <title>In vé</title>
+  <style>
+    @media print {
+      #main-nav, footer, .no-print { display: none !important; }
+      main { padding-top: 0 !important; }
+      .ticket-print { border: 2px dashed #333; }
+    }
+  </style>
+</head>
+<body>
+<main layout:fragment="content">
+  <section class="min-h-screen pt-32 pb-20 px-4 animated-bg">
+    <div class="max-w-md mx-auto no-print mb-6 flex gap-3 justify-center">
+      <button onclick="window.print()" class="px-6 py-2 rounded-xl bg-cyan-600 text-white font-bold">
+        <i class="fas fa-print mr-2"></i> In vé
+      </button>
+      <a th:href="@{/staff/counter}" class="px-6 py-2 rounded-xl bg-white/10 text-white">Quầy vé</a>
+    </div>
+
+    <div class="ticket-print max-w-md mx-auto bg-white text-gray-900 rounded-lg p-8 shadow-2xl">
+      <div class="text-center border-b-2 border-dashed border-gray-300 pb-4 mb-4">
+        <h1 class="text-2xl font-black tracking-tight">CINEMAX</h1>
+        <p class="text-xs text-gray-500" th:text="${invoice.cinemaName}">Rạp</p>
+      </div>
+      <p class="text-center font-mono text-lg font-bold mb-4" th:text="${invoice.bookingCode}">BK-1</p>
+      <dl class="space-y-2 text-sm">
+        <div class="flex justify-between"><dt class="text-gray-500">Phim</dt><dd class="font-semibold text-right max-w-[60%]" th:text="${invoice.movieTitle}"></dd></div>
+        <div class="flex justify-between"><dt class="text-gray-500">Phòng</dt><dd th:text="${invoice.roomName}"></dd></div>
+        <div class="flex justify-between"><dt class="text-gray-500">Suất</dt><dd th:text="${#temporals.format(invoice.showtimeStart, 'dd/MM/yyyy HH:mm')}"></dd></div>
+        <div class="flex justify-between"><dt class="text-gray-500">Ghế</dt><dd class="font-bold" th:text="${#strings.listJoin(invoice.seatNames, ', ')}"></dd></div>
+        <div class="flex justify-between"><dt class="text-gray-500">Khách</dt><dd th:text="${invoice.customerName != null ? invoice.customerName : invoice.customerUsername}"></dd></div>
+        <div class="flex justify-between border-t pt-2 mt-2"><dt class="text-gray-500">Tổng</dt>
+          <dd class="font-bold" th:text="${#numbers.formatDecimal(invoice.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></dd>
+        </div>
+      </dl>
+      <p class="text-center text-xs text-gray-400 mt-6">Vui lòng đến trước giờ chiếu 15 phút · Cảm ơn quý khách</p>
+    </div>
+  </section>
+</main>
+</body>
+</html>

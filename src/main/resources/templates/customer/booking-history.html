@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/index}">
+<head>
+  <title>Lịch sử đặt vé</title>
+</head>
+<body>
+<main layout:fragment="content">
+  <section class="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 animated-bg">
+    <div class="relative z-10 max-w-4xl mx-auto">
+      <h1 class="text-3xl font-bold text-white mb-2">Lịch sử đặt vé</h1>
+      <p class="text-gray-400 text-sm mb-6">Xem vé đã đặt, chờ thanh toán tại quầy hoặc hủy vé <strong class="text-gray-300">trước ít nhất 24 giờ</strong> so với giờ chiếu.</p>
+
+      <div th:if="${successMessage}" class="mb-4 p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-200 text-sm" th:text="${successMessage}"></div>
+      <div th:if="${errorMessage}" class="mb-4 p-4 rounded-xl bg-red-500/15 border border-red-500/40 text-red-200 text-sm" th:text="${errorMessage}"></div>
+
+      <div th:if="${historyPage.empty}" class="text-center text-gray-400 py-16 rounded-3xl bg-cinema-card border border-white/5">
+        <i class="fas fa-ticket text-4xl mb-4 opacity-50"></i>
+        <p>Bạn chưa có vé nào.</p>
+        <a th:href="@{/home#phim-sap-chieu}" class="inline-block mt-4 text-brand-400 hover:text-brand-300">Đặt vé ngay</a>
+      </div>
+
+      <div class="space-y-4" th:unless="${historyPage.empty}">
+        <article th:each="item : ${historyPage.content}"
+                 class="rounded-2xl bg-cinema-card border border-white/5 p-6 flex flex-col md:flex-row gap-6">
+          <img th:src="${item.moviePoster}" th:alt="${item.movieTitle}"
+               class="w-24 h-36 object-cover rounded-xl flex-shrink-0"
+               onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2796%27 height=%27144%27%3E%3Crect fill=%27%231a1a2e%27 width=%2796%27 height=%27144%27/%3E%3C/svg%3E'"/>
+          <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-start justify-between gap-2 mb-2">
+              <h2 class="text-lg font-bold text-white" th:text="${item.movieTitle}">Phim</h2>
+              <span class="text-xs font-mono text-gray-500" th:text="${item.bookingCode}">BK-1</span>
+            </div>
+            <p class="mb-2">
+              <span th:if="${item.bookingStatus == 'PAID'}" class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Đã thanh toán</span>
+              <span th:if="${item.bookingStatus == 'PENDING'}" class="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">Chờ thanh toán tại quầy</span>
+              <span th:if="${item.bookingStatus == 'CANCELLED'}" class="text-xs px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">Đã hủy</span>
+            </p>
+            <p class="text-gray-400 text-sm mb-3">
+              <span th:text="${item.cinemaName}">Rạp</span> ·
+              <span th:text="${item.roomName}">Phòng</span> ·
+              <span th:text="${#temporals.format(item.showtimeStart, 'dd/MM/yyyy HH:mm')}">Giờ</span>
+            </p>
+            <p class="text-sm text-gray-300">
+              Ghế: <span class="text-white font-medium" th:text="${#strings.listJoin(item.seatNames, ', ')}"></span>
+            </p>
+            <p class="text-sm mt-2">
+              <span class="text-brand-400 font-bold" th:text="${#numbers.formatDecimal(item.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+              <span class="text-gray-500 mx-2">·</span>
+              <span class="text-gray-400" th:text="${item.paymentStatus}">SUCCESS</span>
+              <span class="text-gray-500 text-xs ml-2" th:text="${#temporals.format(item.bookedAt, 'dd/MM/yyyy HH:mm')}"></span>
+            </p>
+            <div class="mt-4 flex flex-wrap gap-2" th:if="${item.cancellable}">
+              <form th:action="@{/booking/history/{id}/cancel(id=${item.bookingId})}" method="post"
+                    onsubmit="return confirm('Bạn chắc chắn muốn hủy vé? Ghế sẽ được giải phóng.');">
+                <button type="submit" class="px-4 py-2 rounded-lg bg-red-500/20 text-red-300 border border-red-500/40 text-sm font-semibold hover:bg-red-500/30">
+                  <i class="fas fa-ban mr-1"></i> Hủy vé
+                </button>
+              </form>
+            </div>
+            <p th:if="${item.bookingStatus == 'PENDING'}" class="text-xs text-amber-200/80 mt-2">
+              Mang mã <strong th:text="${item.bookingCode}"></strong> đến quầy để thanh toán.
+            </p>
+          </div>
+        </article>
+      </div>
+
+      <nav th:if="${historyPage.totalPages > 1}" class="mt-8 flex justify-center gap-2">
+        <a th:if="${historyPage.hasPrevious()}"
+           th:href="@{/booking/history(page=${currentPage - 1})}"
+           class="px-4 py-2 rounded-lg bg-white/10 text-white text-sm">Trước</a>
+        <span class="px-4 py-2 text-gray-400 text-sm" th:text="'Trang ' + (${currentPage} + 1) + ' / ' + ${historyPage.totalPages}"></span>
+        <a th:if="${historyPage.hasNext()}"
+           th:href="@{/booking/history(page=${currentPage + 1})}"
+           class="px-4 py-2 rounded-lg bg-white/10 text-white text-sm">Sau</a>
+      </nav>
+    </div>
+  </section>
+</main>
+</body>
+</html>

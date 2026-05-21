@@ -55,13 +55,12 @@
               <tr th:each="st : ${showtimes}" class="border-b border-white/5 hover:bg-cinema-surface/50">
                 <td class="px-4 py-4 text-gray-300" th:text="${st.id}"></td>
                 <td class="px-4 py-4">
-                  <p class="text-white font-semibold" th:text="${st.movie.title}"></p>
-                  <p class="text-gray-500 text-xs" th:text="${st.movie.durationMinutes} + ' phút'"></p>
+                  <p class="text-white font-semibold" th:text="${st.movieTitle}"></p>
+                  <p class="text-gray-500 text-xs" th:text="${st.movieDurationMinutes} + ' phút'"></p>
                 </td>
-                <td class="px-4 py-4 text-gray-300" th:text="${st.room.roomName}"></td>
+                <td class="px-4 py-4 text-gray-300" th:text="${st.roomName}"></td>
                 <td class="px-4 py-4 text-gray-300" th:text="${#temporals.format(st.startTime, 'dd/MM/yyyy HH:mm')}"></td>
-                <td class="px-4 py-4 text-brand-300"
-                    th:text="${#temporals.format(T(com.re.cinema_manager.service.showtime.ShowtimeConflictChecker).computeRoomFreeAt(st.startTime, st.movie.durationMinutes), 'dd/MM/yyyy HH:mm')}">
+                <td class="px-4 py-4 text-brand-300" th:text="${#temporals.format(st.roomFreeAt, 'dd/MM/yyyy HH:mm')}">
                 </td>
                 <td class="px-4 py-4">
                   <div class="flex justify-center gap-2">

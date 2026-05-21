@@ -1,6 +1,8 @@
 package com.re.cinema_manager.service.impl;
 
 import com.re.cinema_manager.model.dto.MovieRequestDTO;
+import com.re.cinema_manager.model.dto.admin.GenreOptionDto;
+import com.re.cinema_manager.model.dto.admin.MovieListItemDto;
 import com.re.cinema_manager.model.entity.Genre;
 import com.re.cinema_manager.model.entity.Movie;
 import com.re.cinema_manager.repository.GenreRepository;
@@ -15,20 +17,46 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class MovieServiceImpl implements MovieService {
+
     private final MovieRepository movieRepository;
     private final GenreRepository genreRepository;
 
     @Override
-    //Tra ve danh sach film
-    public List<Movie> showAllMovie(){
-        return movieRepository.findAllWithGenre();
+    public List<MovieListItemDto> listMoviesForAdmin() {
+        return movieRepository.findAllWithGenre().stream()
+                .map(this::toListItem)
+                .toList();
     }
 
     @Override
-    //them 1 bo phim moi
+    public List<GenreOptionDto> listGenreOptions() {
+        return genreRepository.findAll().stream()
+                .map(g -> GenreOptionDto.builder()
+                        .id(g.getId())
+                        .name(g.getName())
+                        .build())
+                .toList();
+    }
+
+    @Override
+    public MovieRequestDTO getMovieRequestById(Long movieId) {
+        Movie movie = movieRepository.findByIdWithGenre(movieId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy phim này"));
+        return MovieRequestDTO.builder()
+                .title(movie.getTitle())
+                .description(movie.getDescription())
+                .durationMinutes(movie.getDurationMinutes())
+                .releaseDate(movie.getReleaseDate())
+                .posterUrl(movie.getPosterUrl())
+                .genreId(movie.getGenre() != null ? movie.getGenre().getId() : null)
+                .build();
+    }
+
+    @Override
     @Transactional
-    public Movie createMovie(MovieRequestDTO dto){
-        Genre genre =  genreRepository.findById(dto.getGenreId()).orElseThrow(()-> new IllegalArgumentException(("Khong Tim thay the loai phim nay")));
+    public void createMovie(MovieRequestDTO dto) {
+        Genre genre = genreRepository.findById(dto.getGenreId())
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thể loại phim này"));
 
         Movie movie = Movie.builder()
                 .title(dto.getTitle())
@@ -38,25 +66,18 @@ public class MovieServiceImpl implements MovieService {
                 .posterUrl(dto.getPosterUrl())
                 .genre(genre)
                 .build();
-        return movieRepository.save(movie);
-    }
-
-    @Override
-    //
-    @Transactional
-    public Movie getMovieById(Long movieId){
-        return movieRepository.findByIdWithGenre(movieId)
-                .orElseThrow(() -> new IllegalArgumentException("Khong tim thay phim nay"));
+        movieRepository.save(movie);
     }
 
     @Override
     @Transactional
-    public Movie updateMovie(Long movieId, MovieRequestDTO dto){
-        Movie existingMovie = getMovieById(movieId);
+    public void updateMovie(Long movieId, MovieRequestDTO dto) {
+        Movie existingMovie = movieRepository.findByIdWithGenre(movieId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy phim này"));
 
-        Genre genre =  genreRepository.findById(dto.getGenreId()).orElseThrow(()-> new IllegalArgumentException(("Khong Tim thay the loai phim nay")));
+        Genre genre = genreRepository.findById(dto.getGenreId())
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thể loại phim này"));
 
-        //Ghi de thong tin cua movie moi update vao entity cu vao bo nho tam
         existingMovie.setTitle(dto.getTitle());
         existingMovie.setDescription(dto.getDescription());
         existingMovie.setDurationMinutes(dto.getDurationMinutes());
@@ -64,16 +85,27 @@ public class MovieServiceImpl implements MovieService {
         existingMovie.setPosterUrl(dto.getPosterUrl());
         existingMovie.setGenre(genre);
 
-        return movieRepository.save(existingMovie);
+        movieRepository.save(existingMovie);
     }
 
     @Override
     @Transactional
-    public void deletedMovie(Long movieId){
-        if(!movieRepository.existsById(movieId)){
+    public void deletedMovie(Long movieId) {
+        if (!movieRepository.existsById(movieId)) {
             throw new IllegalArgumentException("Không tìm thấy bộ phim với ID: " + movieId);
         }
         movieRepository.deleteById(movieId);
     }
 
+    private MovieListItemDto toListItem(Movie movie) {
+        return MovieListItemDto.builder()
+                .id(movie.getId())
+                .title(movie.getTitle())
+                .description(movie.getDescription())
+                .posterUrl(movie.getPosterUrl())
+                .durationMinutes(movie.getDurationMinutes())
+                .releaseDate(movie.getReleaseDate())
+                .genreName(movie.getGenre() != null ? movie.getGenre().getName() : "—")
+                .build();
+    }
 }

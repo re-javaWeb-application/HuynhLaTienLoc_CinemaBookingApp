@@ -14,35 +14,34 @@
         <div>
           <h1 class="text-4xl font-display font-bold text-white" th:text="${showtimeId != null ? 'Chỉnh Sửa Suất Chiếu' : 'Thêm Suất Chiếu'}"></h1>
           <p class="text-gray-400 text-sm mt-1">Chọn Phim + Phòng + Giờ bắt đầu (CORE-05)</p>
-          <p class="text-amber-400/90 text-xs mt-2">
-            <i class="fas fa-info-circle mr-1"></i>
-            Hệ thống tự kiểm tra trùng phòng: thời lượng phim + 15 phút dọn phòng giữa hai suất.
-          </p>
         </div>
       </div>
 
       <div th:if="${errorMessage}" class="mb-4 p-4 rounded-lg bg-red-600/20 border border-red-500/30 text-red-300" th:text="${errorMessage}"></div>
+      <div th:if="${validationError}" class="mb-4 p-4 rounded-lg bg-amber-600/20 border border-amber-500/30 text-amber-200 text-sm" th:text="${validationError}"></div>
 
       <div class="rounded-3xl bg-cinema-card border border-white/5 shadow-card p-8">
-        <form method="post" th:object="${showtimeDto}" th:action="@{|/admin/showtimes/${showtimeId != null ? 'edit/' + showtimeId : 'create'}|}" class="space-y-6">
+        <form method="post" th:object="${showtimeDto}" th:action="@{|/admin/showtimes/${showtimeId != null ? 'edit/' + showtimeId : 'create'}|}" class="space-y-6" novalidate>
           <div>
             <label class="block text-sm font-semibold text-gray-200 mb-2">Phim *</label>
-            <select th:field="*{movieId}" required class="w-full px-4 py-3 rounded-lg bg-cinema-surface border border-white/10 text-white">
+            <select th:field="*{movieId}" class="w-full px-4 py-3 rounded-lg bg-cinema-surface border border-white/10 text-white">
               <option value="">-- Chọn phim --</option>
               <option th:each="m : ${movies}" th:value="${m.id}" th:text="${m.title + ' (' + m.durationMinutes + ' phút)'}"></option>
             </select>
+            <p th:if="${#fields.hasErrors('movieId')}" th:errors="*{movieId}" class="text-red-400 text-xs mt-1"></p>
           </div>
           <div>
             <label class="block text-sm font-semibold text-gray-200 mb-2">Phòng chiếu *</label>
-            <select th:field="*{roomId}" required class="w-full px-4 py-3 rounded-lg bg-cinema-surface border border-white/10 text-white">
+            <select th:field="*{roomId}" class="w-full px-4 py-3 rounded-lg bg-cinema-surface border border-white/10 text-white">
               <option value="">-- Chọn phòng --</option>
               <option th:each="r : ${rooms}" th:value="${r.id}" th:text="${r.roomName + ' (' + r.capacity + ' ghế)'}"></option>
             </select>
+            <p th:if="${#fields.hasErrors('roomId')}" th:errors="*{roomId}" class="text-red-400 text-xs mt-1"></p>
           </div>
           <div>
             <label class="block text-sm font-semibold text-gray-200 mb-2">Giờ bắt đầu chiếu *</label>
-            <input type="datetime-local" th:field="*{startTime}" required class="w-full px-4 py-3 rounded-lg bg-cinema-surface border border-white/10 text-white" />
-            <p class="text-gray-500 text-xs mt-1">Ví dụ: suất 08:00, phim 120 phút → suất tiếp theo cùng phòng chỉ từ 10:15.</p>
+            <input type="datetime-local" th:field="*{startTime}" class="w-full px-4 py-3 rounded-lg bg-cinema-surface border border-white/10 text-white" />
+            <p th:if="${#fields.hasErrors('startTime')}" th:errors="*{startTime}" class="text-red-400 text-xs mt-1"></p>
           </div>
           <div class="flex gap-3 pt-4">
             <button type="submit" class="flex-1 px-6 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-brand-500 text-white font-semibold">
@@ -55,6 +54,5 @@
     </div>
   </section>
 </main>
-<script layout:fragment="scripts"></script>
 </body>
 </html>

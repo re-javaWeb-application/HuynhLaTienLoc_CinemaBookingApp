@@ -1,22 +1,25 @@
 package com.re.cinema_manager.service;
 
 import com.re.cinema_manager.model.dto.ShowtimeRequestDTO;
-import com.re.cinema_manager.model.entity.Showtime;
+import com.re.cinema_manager.model.dto.admin.MovieOptionDto;
+import com.re.cinema_manager.model.dto.admin.RoomOptionDto;
+import com.re.cinema_manager.model.dto.admin.ShowtimeListItemDto;
 
 import java.util.List;
 
-/**
- * CORE-05 — Quản lý suất chiếu (Showtime Scheduling).
- */
 public interface ShowtimeService {
 
-    List<Showtime> findAllShowtimes();
+    List<ShowtimeListItemDto> listShowtimesForAdmin();
 
-    Showtime getShowtimeById(Long id);
+    List<MovieOptionDto> listMovieOptions();
 
-    Showtime createShowtime(ShowtimeRequestDTO dto);
+    List<RoomOptionDto> listRoomOptions();
 
-    Showtime updateShowtime(Long id, ShowtimeRequestDTO dto);
+    ShowtimeRequestDTO getShowtimeRequestById(Long id);
+
+    void createShowtime(ShowtimeRequestDTO dto);
+
+    void updateShowtime(Long id, ShowtimeRequestDTO dto);
 
     void deleteShowtime(Long id);
 }

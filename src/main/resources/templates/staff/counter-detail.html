@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/index}">
+<head>
+  <title>Chi tiết vé</title>
+</head>
+<body>
+<main layout:fragment="content">
+  <section class="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 animated-bg">
+    <div class="relative z-10 max-w-2xl mx-auto">
+      <a th:href="@{/staff/counter}" class="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-6 text-sm">
+        <i class="fas fa-arrow-left"></i> Quay lại quầy vé
+      </a>
+
+      <div class="rounded-3xl bg-cinema-card border border-white/5 p-8 space-y-4">
+        <div class="flex justify-between items-start">
+          <h1 class="text-2xl font-bold text-white" th:text="${detail.bookingCode}">BK-1</h1>
+          <span class="text-xs px-3 py-1 rounded-full font-semibold"
+                th:classappend="${detail.bookingStatus == 'PAID'} ? 'bg-emerald-500/20 text-emerald-300' : (${detail.bookingStatus == 'PENDING'} ? 'bg-amber-500/20 text-amber-300' : 'bg-red-500/20 text-red-300')"
+                th:text="${detail.bookingStatus}">PAID</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+          <div><span class="text-gray-500 block">Khách hàng</span><span class="text-white font-medium" th:text="${detail.customerFullName}"></span></div>
+          <div><span class="text-gray-500 block">Tài khoản</span><span class="text-white" th:text="${detail.customerUsername}"></span></div>
+          <div><span class="text-gray-500 block">Điện thoại</span><span class="text-white" th:text="${detail.customerPhone != null ? detail.customerPhone : '—'}"></span></div>
+          <div><span class="text-gray-500 block">Phim</span><span class="text-white font-medium" th:text="${detail.movieTitle}"></span></div>
+          <div><span class="text-gray-500 block">Phòng / Suất</span>
+            <span class="text-white" th:text="${detail.roomName} + ' · ' + ${#temporals.format(detail.showtimeStart, 'dd/MM/yyyy HH:mm')}"></span>
+          </div>
+          <div><span class="text-gray-500 block">Ghế</span><span class="text-white font-medium" th:text="${#strings.listJoin(detail.seatNames, ', ')}"></span></div>
+          <div><span class="text-gray-500 block">Tổng tiền</span>
+            <span class="text-brand-400 font-bold" th:text="${#numbers.formatDecimal(detail.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+          </div>
+          <div><span class="text-gray-500 block">Thanh toán</span>
+            <span class="text-white" th:text="${detail.paymentStatus} + (${detail.paymentMethod != null} ? ' · ' + ${detail.paymentMethod} : '')"></span>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-white/10">
+          <form th:if="${detail.canConfirmPayment}" th:action="@{/staff/counter/{id}/confirm(id=${detail.bookingId})}" method="post"
+                onsubmit="return confirm('Xác nhận khách đã thanh toán tại quầy?');" class="flex-1">
+            <button type="submit" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold">
+              <i class="fas fa-check-circle mr-2"></i> Xác nhận thanh toán
+            </button>
+          </form>
+          <a th:if="${detail.canPrintTicket}" th:href="@{/staff/counter/{id}/print(id=${detail.bookingId})}"
+             class="flex-1 text-center py-3 rounded-xl bg-cyan-600/80 hover:bg-cyan-500 text-white font-bold">
+            <i class="fas fa-print mr-2"></i> In / Xuất vé
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

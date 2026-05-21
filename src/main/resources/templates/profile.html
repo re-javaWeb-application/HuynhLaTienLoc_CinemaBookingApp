@@ -59,10 +59,10 @@
                         <h2 class="text-2xl sm:text-3xl font-display font-bold text-white leading-tight truncate"
                             th:text="${profile.fullName}">Full Name</h2>
                         <p class="text-gray-400 text-sm mt-0.5" th:text="'@' + ${profile.username}">@username</p>
-                        <span th:classappend="${profile.role == 'ADMIN'} ? 'bg-amber-500/15 text-amber-400 border-amber-500/30' : 'bg-brand-500/15 text-brand-400 border-brand-500/30'"
+                        <span th:classappend="${profile.role == 'ADMIN'} ? 'bg-amber-500/15 text-amber-400 border-amber-500/30' : (${profile.role == 'STAFF'} ? 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30' : 'bg-brand-500/15 text-brand-400 border-brand-500/30')"
                               class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border mt-3">
-                            <i th:classappend="${profile.role == 'ADMIN'} ? 'fas fa-crown' : 'fas fa-ticket-alt'" class="text-xs"></i>
-                            <span th:text="${profile.role == 'ADMIN'} ? 'Quản trị viên' : 'Khách hàng'">Khách hàng</span>
+                            <i th:classappend="${profile.role == 'ADMIN'} ? 'fas fa-crown' : (${profile.role == 'STAFF'} ? 'fas fa-id-badge' : 'fas fa-ticket-alt')" class="text-xs"></i>
+                            <span th:text="${profile.role == 'ADMIN'} ? 'Quản trị viên' : (${profile.role == 'STAFF'} ? 'Nhân viên' : 'Khách hàng')">Khách hàng</span>
                         </span>
                     </div>
 
@@ -84,7 +84,7 @@
                             <div>
                                 <p class="text-gray-500 text-xs">Vai trò</p>
                                 <p class="text-white text-sm font-semibold"
-                                   th:text="${profile.role == 'ADMIN'} ? 'Admin' : 'Customer'">Customer</p>
+                                   th:text="${profile.role == 'ADMIN'} ? 'Admin' : (${profile.role == 'STAFF'} ? 'Staff' : 'Customer')">Customer</p>
                             </div>
                         </div>
                     </div>
