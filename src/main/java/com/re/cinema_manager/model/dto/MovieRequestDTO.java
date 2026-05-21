@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -29,6 +30,7 @@ public class MovieRequestDTO {
     private int durationMinutes;
 
     @NotNull(message = "Vui lòng chọn ngày phát hành")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate releaseDate;
 
     @NotBlank(message = "Vui lòng nhập URL poster")

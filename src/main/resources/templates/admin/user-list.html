@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/index}">
+<head>
+  <title>Quản lý tài khoản</title>
+</head>
+<body>
+<main layout:fragment="content">
+  <div th:if="${successMessage}" data-auto-dismiss class="fixed top-4 right-4 z-50">
+    <div class="bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg" th:text="${successMessage}"></div>
+  </div>
+  <div th:if="${errorMessage}" data-auto-dismiss class="fixed top-4 right-4 z-50">
+    <div class="bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg" th:text="${errorMessage}"></div>
+  </div>
+
+  <section class="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 animated-bg">
+    <div class="relative z-10 max-w-6xl mx-auto">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+        <div>
+          <h1 class="text-4xl font-display font-bold text-white">Quản lý tài khoản</h1>
+          <p class="text-gray-400 text-sm mt-1">Tổng: <span th:text="${users.size()}">0</span> tài khoản</p>
+        </div>
+        <a th:href="@{/admin/users/create}" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-500 to-purple-600 text-white rounded-lg font-semibold">
+          <i class="fas fa-user-plus"></i> Thêm tài khoản
+        </a>
+      </div>
+
+      <div class="rounded-2xl bg-cinema-card border border-white/5 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="text-gray-500 bg-white/5 text-left">
+              <tr>
+                <th class="px-4 py-3">ID</th>
+                <th class="px-4 py-3">Đăng nhập</th>
+                <th class="px-4 py-3">Họ tên</th>
+                <th class="px-4 py-3">Email</th>
+                <th class="px-4 py-3">Vai trò</th>
+                <th class="px-4 py-3">Đơn vé</th>
+                <th class="px-4 py-3 text-right">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="u : ${users}" class="border-t border-white/5 hover:bg-white/5">
+                <td class="px-4 py-3 text-gray-400" th:text="${u.id}"></td>
+                <td class="px-4 py-3 text-white font-medium" th:text="${u.username}"></td>
+                <td class="px-4 py-3 text-gray-300" th:text="${u.fullName}"></td>
+                <td class="px-4 py-3 text-gray-400" th:text="${u.email}"></td>
+                <td class="px-4 py-3">
+                  <span th:switch="${u.role.name()}"
+                        class="px-2 py-0.5 rounded text-xs font-semibold"
+                        th:classappend="${u.role.name() == 'ADMIN'} ? 'bg-amber-500/20 text-amber-300' : (${u.role.name() == 'STAFF'} ? 'bg-cyan-500/20 text-cyan-300' : 'bg-white/10 text-gray-300')">
+                    <span th:case="'ADMIN'">Admin</span>
+                    <span th:case="'STAFF'">Nhân viên</span>
+                    <span th:case="*">Khách</span>
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-gray-400" th:text="${u.bookingCount}"></td>
+                <td class="px-4 py-3 text-right space-x-2">
+                  <a th:href="@{/admin/users/edit/{id}(id=${u.id})}" class="text-brand-400 hover:text-brand-300"><i class="fas fa-edit"></i></a>
+                  <form th:action="@{/admin/users/delete/{id}(id=${u.id})}" method="post" class="inline"
+                        onsubmit="return confirm('Xóa tài khoản này?');">
+                    <button type="submit" class="text-red-400 hover:text-red-300"><i class="fas fa-trash"></i></button>
+                  </form>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="mt-6 flex flex-wrap gap-3 text-sm">
+        <a th:href="@{/admin/movies}" class="text-amber-400 hover:text-amber-300">← Quản lý phim</a>
+        <a th:href="@{/admin/showtimes}" class="text-purple-400 hover:text-purple-300">Lịch chiếu</a>
+        <a th:href="@{/admin/reports}" class="text-emerald-400 hover:text-emerald-300">Báo cáo doanh thu</a>
+      </div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

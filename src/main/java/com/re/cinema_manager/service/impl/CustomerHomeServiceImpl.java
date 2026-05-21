@@ -7,6 +7,7 @@ import com.re.cinema_manager.model.entity.Showtime;
 import com.re.cinema_manager.repository.ShowtimeRepository;
 import com.re.cinema_manager.service.CustomerHomeService;
 import com.re.cinema_manager.service.ShowtimeAvailabilityService;
+import com.re.cinema_manager.util.PosterUrlUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -97,7 +98,7 @@ public class CustomerHomeServiceImpl implements CustomerHomeService {
                 .movieId(movie.getId())
                 .title(movie.getTitle())
                 .description(movie.getDescription())
-                .posterUrl(movie.getPosterUrl())
+                .posterUrl(PosterUrlUtil.normalize(movie.getPosterUrl()))
                 .durationMinutes(movie.getDurationMinutes())
                 .genreId(genreId)
                 .genreName(genreName)

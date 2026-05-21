@@ -9,6 +9,7 @@ import com.re.cinema_manager.service.BookingService;
 import com.re.cinema_manager.service.ShowtimeAvailabilityService;
 import com.re.cinema_manager.util.BookingCodeUtil;
 import com.re.cinema_manager.util.BookingPolicy;
+import com.re.cinema_manager.util.PosterUrlUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -69,7 +70,7 @@ public class BookingServiceImpl implements BookingService {
         return SeatSelectionView.builder()
                 .showtimeId(showtimeId)
                 .movieTitle(movie.getTitle())
-                .moviePoster(movie.getPosterUrl())
+                .moviePoster(PosterUrlUtil.normalize(movie.getPosterUrl()))
                 .roomName(showtime.getRoom().getRoomName())
                 .showtimeStart(showtime.getStartTime())
                 .durationMinutes(movie.getDurationMinutes())
@@ -237,7 +238,7 @@ public class BookingServiceImpl implements BookingService {
                 .bookingId(booking.getId())
                 .bookingCode(BookingCodeUtil.format(booking.getId()))
                 .movieTitle(movie.getTitle())
-                .moviePoster(movie.getPosterUrl())
+                .moviePoster(PosterUrlUtil.normalize(movie.getPosterUrl()))
                 .cinemaName(CINEMA_NAME)
                 .roomName(st.getRoom().getRoomName())
                 .showtimeStart(st.getStartTime())

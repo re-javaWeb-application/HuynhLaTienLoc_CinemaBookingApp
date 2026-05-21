@@ -3,10 +3,13 @@ package com.re.cinema_manager.service.impl;
 import com.re.cinema_manager.dto.admin.RevenueDailyRowDto;
 import com.re.cinema_manager.dto.admin.RevenueMonthlyRowDto;
 import com.re.cinema_manager.dto.admin.RevenueReportDto;
+import com.re.cinema_manager.dto.admin.TopMovieRevenueDto;
 import com.re.cinema_manager.repository.BookingRepository;
 import com.re.cinema_manager.repository.PaymentRepository;
 import com.re.cinema_manager.repository.projection.MonthlyRevenueProjection;
 import com.re.cinema_manager.repository.projection.RevenueDailyProjection;
+import com.re.cinema_manager.repository.projection.TopMovieRevenueProjection;
+import com.re.cinema_manager.util.PosterUrlUtil;
 import com.re.cinema_manager.service.RevenueReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -52,6 +55,13 @@ public class RevenueReportServiceImpl implements RevenueReportService {
                 .map(this::toMonthlyRow)
                 .toList();
 
+        List<RevenueMonthlyRowDto> monthlyForChart = paymentRepository.sumRevenueByMonthAsc(from, toExclusive).stream()
+                .map(this::toMonthlyRow)
+                .toList();
+
+        List<TopMovieRevenueDto> topMovies = mapTopMovies(
+                paymentRepository.findTopMoviesByRevenue(from, toExclusive));
+
         return RevenueReportDto.builder()
                 .fromDate(fromDate)
                 .toDate(toDate)
@@ -59,8 +69,25 @@ public class RevenueReportServiceImpl implements RevenueReportService {
                 .totalPaidBookings(paidCount)
                 .cancelledBookingsInRange(cancelled)
                 .dailyRows(daily)
-                .monthlyRows(monthly)
+                .monthlyRows(monthlyForChart.isEmpty() ? monthly : monthlyForChart)
+                .topMovies(topMovies)
                 .build();
+    }
+
+    private List<TopMovieRevenueDto> mapTopMovies(List<TopMovieRevenueProjection> rows) {
+        return java.util.stream.IntStream.range(0, rows.size())
+                .mapToObj(i -> {
+                    TopMovieRevenueProjection row = rows.get(i);
+                    return TopMovieRevenueDto.builder()
+                            .rank(i + 1)
+                            .movieId(row.getMovieId())
+                            .movieTitle(row.getMovieTitle())
+                            .posterUrl(PosterUrlUtil.normalize(row.getPosterUrl()))
+                            .totalRevenue(row.getTotalRevenue() != null ? row.getTotalRevenue() : BigDecimal.ZERO)
+                            .bookingCount(row.getBookingCount() != null ? row.getBookingCount() : 0L)
+                            .build();
+                })
+                .toList();
     }
 
     private RevenueDailyRowDto toDailyRow(RevenueDailyProjection row) {

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/index}">
+<head>
+  <title>Dashboard — Nhân viên</title>
+</head>
+<body>
+<main layout:fragment="content">
+  <section class="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 animated-bg">
+    <div class="relative z-10 max-w-6xl mx-auto">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+          <h1 class="text-3xl font-bold text-white">Thống kê phòng &amp; ghế</h1>
+          <p class="text-gray-400 text-sm mt-1">Suất chiếu từ thời điểm hiện tại trở đi</p>
+        </div>
+        <div class="flex gap-3">
+          <a th:href="@{/staff/dashboard}" class="px-4 py-2 rounded-xl bg-cyan-600/30 border border-cyan-500/40 text-cyan-200 text-sm font-semibold">
+            <i class="fas fa-chart-pie mr-1"></i> Dashboard
+          </a>
+          <a th:href="@{/staff/counter}" class="px-4 py-2 rounded-xl bg-white/10 border border-white/10 text-white text-sm font-semibold hover:bg-white/15">
+            <i class="fas fa-cash-register mr-1"></i> Quầy vé
+          </a>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="rounded-2xl bg-cinema-card border border-cyan-500/20 p-5">
+          <p class="text-gray-500 text-xs uppercase tracking-wide">Phòng chiếu</p>
+          <p class="text-3xl font-bold text-white mt-1" th:text="${dashboard.totalRooms}">0</p>
+        </div>
+        <div class="rounded-2xl bg-cinema-card border border-white/10 p-5">
+          <p class="text-gray-500 text-xs uppercase tracking-wide">Tổng ghế (hệ thống)</p>
+          <p class="text-3xl font-bold text-white mt-1" th:text="${dashboard.totalSeatsInSystem}">0</p>
+        </div>
+        <div class="rounded-2xl bg-cinema-card border border-emerald-500/20 p-5">
+          <p class="text-gray-500 text-xs uppercase tracking-wide">Vé đã đặt (sắp chiếu)</p>
+          <p class="text-3xl font-bold text-emerald-400 mt-1" th:text="${dashboard.totalBookedTicketsUpcoming}">0</p>
+        </div>
+        <div class="rounded-2xl bg-cinema-card border border-purple-500/20 p-5">
+          <p class="text-gray-500 text-xs uppercase tracking-wide">Suất sắp chiếu</p>
+          <p class="text-3xl font-bold text-purple-300 mt-1" th:text="${dashboard.totalUpcomingShowtimes}">0</p>
+        </div>
+      </div>
+
+      <div class="rounded-3xl bg-cinema-card border border-white/5 overflow-hidden mb-8">
+        <div class="px-6 py-4 border-b border-white/10">
+          <h2 class="text-lg font-semibold text-white">Theo phòng</h2>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left">
+            <thead class="text-gray-500 bg-white/5">
+              <tr>
+                <th class="px-6 py-3">Phòng</th>
+                <th class="px-6 py-3">Sức chứa</th>
+                <th class="px-6 py-3">Ghế trên sơ đồ</th>
+                <th class="px-6 py-3">Vé đã bán (sắp tới)</th>
+                <th class="px-6 py-3">Tỷ lệ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="r : ${dashboard.roomStats}" class="border-t border-white/5 hover:bg-white/5">
+                <td class="px-6 py-3 text-white font-medium" th:text="${r.roomName}"></td>
+                <td class="px-6 py-3 text-gray-300" th:text="${r.capacity}"></td>
+                <td class="px-6 py-3 text-gray-300" th:text="${r.totalSeats}"></td>
+                <td class="px-6 py-3 text-emerald-300" th:text="${r.bookedSeatsUpcoming}"></td>
+                <td class="px-6 py-3">
+                  <span class="text-brand-400 font-semibold" th:text="${r.occupancyPercent} + '%'"></span>
+                </td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(dashboard.roomStats)}">
+                <td colspan="5" class="px-6 py-8 text-center text-gray-500">Chưa có dữ liệu phòng.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="rounded-3xl bg-cinema-card border border-white/5 overflow-hidden">
+        <div class="px-6 py-4 border-b border-white/10">
+          <h2 class="text-lg font-semibold text-white">Chi tiết theo suất chiếu</h2>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left">
+            <thead class="text-gray-500 bg-white/5">
+              <tr>
+                <th class="px-6 py-3">Phim</th>
+                <th class="px-6 py-3">Phòng</th>
+                <th class="px-6 py-3">Giờ chiếu</th>
+                <th class="px-6 py-3">Đã đặt / Tổng ghế</th>
+                <th class="px-6 py-3">%</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="st : ${dashboard.showtimeDetails}" class="border-t border-white/5 hover:bg-white/5">
+                <td class="px-6 py-3 text-white" th:text="${st.movieTitle}"></td>
+                <td class="px-6 py-3 text-gray-300" th:text="${st.roomName}"></td>
+                <td class="px-6 py-3 text-gray-300" th:text="${#temporals.format(st.startTime, 'dd/MM/yyyy HH:mm')}"></td>
+                <td class="px-6 py-3">
+                  <span class="text-emerald-300" th:text="${st.bookedSeats}"></span>
+                  <span class="text-gray-500"> / </span>
+                  <span th:text="${st.totalSeats}"></span>
+                </td>
+                <td class="px-6 py-3 text-brand-400 font-semibold" th:text="${st.occupancyPercent} + '%'"></td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(dashboard.showtimeDetails)}">
+                <td colspan="5" class="px-6 py-8 text-center text-gray-500">Chưa có suất chiếu sắp tới.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

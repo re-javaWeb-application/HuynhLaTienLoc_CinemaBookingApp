@@ -1,0 +1,22 @@
+package com.re.cinema_manager.controller;
+
+import com.re.cinema_manager.service.StaffDashboardService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("/staff")
+@RequiredArgsConstructor
+public class StaffDashboardController {
+
+    private final StaffDashboardService staffDashboardService;
+
+    @GetMapping("/dashboard")
+    public String dashboard(Model model) {
+        model.addAttribute("dashboard", staffDashboardService.buildDashboard());
+        return "staff/dashboard";
+    }
+}

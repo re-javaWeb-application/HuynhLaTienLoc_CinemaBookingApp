@@ -51,4 +51,8 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, Long> {
             ORDER BY s.startTime ASC
             """)
     List<Showtime> findUpcomingWithMovieGenreAndRoom(@Param("from") LocalDateTime from);
+
+    List<Showtime> findByMovie_Id(Long movieId);
+
+    void deleteByMovie_Id(Long movieId);
 }

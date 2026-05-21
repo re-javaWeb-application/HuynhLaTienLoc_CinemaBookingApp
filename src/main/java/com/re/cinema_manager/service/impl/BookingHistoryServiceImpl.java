@@ -8,6 +8,7 @@ import com.re.cinema_manager.repository.BookingRepository;
 import com.re.cinema_manager.repository.TicketRepository;
 import com.re.cinema_manager.service.BookingHistoryService;
 import com.re.cinema_manager.util.BookingPolicy;
+import com.re.cinema_manager.util.PosterUrlUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -70,7 +71,7 @@ public class BookingHistoryServiceImpl implements BookingHistoryService {
                 .bookingId(booking.getId())
                 .bookingCode("BK-" + booking.getId())
                 .movieTitle(movie.getTitle())
-                .moviePoster(movie.getPosterUrl())
+                .moviePoster(PosterUrlUtil.normalize(movie.getPosterUrl()))
                 .cinemaName(BookingServiceImpl.CINEMA_NAME)
                 .roomName(st.getRoom().getRoomName())
                 .showtimeStart(st.getStartTime())

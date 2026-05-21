@@ -36,13 +36,19 @@
         >
           <div class="relative aspect-[2/3] overflow-hidden bg-cinema-surface">
             <img
+              th:if="${movie.posterUrl != null and !#strings.isEmpty(movie.posterUrl)}"
               th:src="${movie.posterUrl}"
               th:alt="${movie.title}"
+              referrerpolicy="no-referrer"
               class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
               loading="lazy"
               decoding="async"
-              onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27600%27%3E%3Crect fill=%27%231a1a2e%27 width=%27400%27 height=%27600%27/%3E%3Ctext x=%27200%27 y=%27300%27 fill=%27%236b7280%27 font-size=%2720%27 text-anchor=%27middle%27%3EN/A%3C/text%3E%3C/svg%3E'"
+              onerror="this.onerror=null;this.classList.add('hidden');this.nextElementSibling?.classList.remove('hidden');"
             />
+            <div th:classappend="${movie.posterUrl != null and !#strings.isEmpty(movie.posterUrl)} ? 'hidden' : ''"
+                 class="w-full h-full flex items-center justify-center bg-cinema-surface text-gray-500 text-sm p-4 text-center">
+              <span><i class="fas fa-image block text-2xl mb-2 opacity-50"></i>Không tải được poster</span>
+            </div>
             <span class="absolute top-3 left-3 bg-purple-600/90 text-white text-xs font-bold px-2 py-1 rounded" th:text="${movie.genreName}"></span>
             <span th:if="${movie.soldOut}"
                   class="absolute top-3 right-3 bg-red-600/95 text-white text-xs font-bold px-2 py-1 rounded shadow-lg">

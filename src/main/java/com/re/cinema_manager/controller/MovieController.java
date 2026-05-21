@@ -80,6 +80,10 @@ public class MovieController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("genres", movieService.listGenreOptions());
             model.addAttribute("validationError", "Vui lòng kiểm tra lại các trường bắt buộc.");
+            if (dto.getReleaseDate() == null) {
+                model.addAttribute("validationError",
+                        "Ngày phát hành không hợp lệ hoặc bị trống. Vui lòng chọn lại (định dạng ngày trên form).");
+            }
             return "admin/movie-form";
         }
         try {
@@ -98,8 +102,11 @@ public class MovieController {
         try {
             movieService.deletedMovie(id);
             redirectAttributes.addFlashAttribute("successMessage", "Đã xóa phim khỏi hệ thống!");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Không thể xóa phim: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Không thể xóa phim. Vui lòng thử lại hoặc liên hệ quản trị.");
         }
         return "redirect:/admin/movies";
     }

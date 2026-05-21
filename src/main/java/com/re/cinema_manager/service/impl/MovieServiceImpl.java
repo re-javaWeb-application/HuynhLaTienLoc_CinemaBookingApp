@@ -5,9 +5,12 @@ import com.re.cinema_manager.model.dto.admin.GenreOptionDto;
 import com.re.cinema_manager.model.dto.admin.MovieListItemDto;
 import com.re.cinema_manager.model.entity.Genre;
 import com.re.cinema_manager.model.entity.Movie;
+import com.re.cinema_manager.repository.BookingRepository;
 import com.re.cinema_manager.repository.GenreRepository;
 import com.re.cinema_manager.repository.MovieRepository;
+import com.re.cinema_manager.repository.ShowtimeRepository;
 import com.re.cinema_manager.service.MovieService;
+import com.re.cinema_manager.util.PosterUrlUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,8 @@ public class MovieServiceImpl implements MovieService {
 
     private final MovieRepository movieRepository;
     private final GenreRepository genreRepository;
+    private final ShowtimeRepository showtimeRepository;
+    private final BookingRepository bookingRepository;
 
     @Override
     public List<MovieListItemDto> listMoviesForAdmin() {
@@ -47,7 +52,7 @@ public class MovieServiceImpl implements MovieService {
                 .description(movie.getDescription())
                 .durationMinutes(movie.getDurationMinutes())
                 .releaseDate(movie.getReleaseDate())
-                .posterUrl(movie.getPosterUrl())
+                .posterUrl(PosterUrlUtil.normalize(movie.getPosterUrl()))
                 .genreId(movie.getGenre() != null ? movie.getGenre().getId() : null)
                 .build();
     }
@@ -63,7 +68,7 @@ public class MovieServiceImpl implements MovieService {
                 .description(dto.getDescription())
                 .durationMinutes(dto.getDurationMinutes())
                 .releaseDate(dto.getReleaseDate())
-                .posterUrl(dto.getPosterUrl())
+                .posterUrl(PosterUrlUtil.normalize(dto.getPosterUrl()))
                 .genre(genre)
                 .build();
         movieRepository.save(movie);
@@ -78,11 +83,15 @@ public class MovieServiceImpl implements MovieService {
         Genre genre = genreRepository.findById(dto.getGenreId())
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thể loại phim này"));
 
+        if (dto.getReleaseDate() == null) {
+            throw new IllegalArgumentException("Vui lòng chọn ngày phát hành.");
+        }
+
         existingMovie.setTitle(dto.getTitle());
         existingMovie.setDescription(dto.getDescription());
         existingMovie.setDurationMinutes(dto.getDurationMinutes());
         existingMovie.setReleaseDate(dto.getReleaseDate());
-        existingMovie.setPosterUrl(dto.getPosterUrl());
+        existingMovie.setPosterUrl(PosterUrlUtil.normalize(dto.getPosterUrl()));
         existingMovie.setGenre(genre);
 
         movieRepository.save(existingMovie);
@@ -94,6 +103,17 @@ public class MovieServiceImpl implements MovieService {
         if (!movieRepository.existsById(movieId)) {
             throw new IllegalArgumentException("Không tìm thấy bộ phim với ID: " + movieId);
         }
+
+        long activeBookings = bookingRepository.countActiveBookingsByMovieId(movieId);
+        if (activeBookings > 0) {
+            throw new IllegalArgumentException(
+                    "Không thể xóa phim: đã có " + activeBookings + " đơn đặt vé (đang chờ hoặc đã thanh toán). "
+                            + "Vui lòng hủy/xử lý đơn trước khi xóa phim.");
+        }
+
+        // Xóa đơn đã hủy (nếu có) rồi suất chiếu — tránh lỗi FK showtimes → movies
+        bookingRepository.deleteByShowtime_Movie_Id(movieId);
+        showtimeRepository.deleteByMovie_Id(movieId);
         movieRepository.deleteById(movieId);
     }
 
@@ -102,7 +122,7 @@ public class MovieServiceImpl implements MovieService {
                 .id(movie.getId())
                 .title(movie.getTitle())
                 .description(movie.getDescription())
-                .posterUrl(movie.getPosterUrl())
+                .posterUrl(PosterUrlUtil.normalize(movie.getPosterUrl()))
                 .durationMinutes(movie.getDurationMinutes())
                 .releaseDate(movie.getReleaseDate())
                 .genreName(movie.getGenre() != null ? movie.getGenre().getName() : "—")

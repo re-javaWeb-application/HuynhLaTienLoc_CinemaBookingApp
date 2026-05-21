@@ -73,9 +73,11 @@ public class UserController {
     public String login(LoginDto loginDto, RedirectAttributes redirectAttributes, HttpSession session) {
         try {
             User user = userService.Login(loginDto);
-            // Lưu thông tin user vào Session
             session.setAttribute("loggedInUser", user);
-            redirectAttributes.addFlashAttribute("successMessage", "Đăng nhập thành công! Chào mừng bạ trở lại.");
+            redirectAttributes.addFlashAttribute("successMessage", "Đăng nhập thành công! Chào mừng bạn trở lại.");
+            if (user.getRole() == Role.STAFF) {
+                return "redirect:/staff/dashboard";
+            }
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("loginError", "Tên đăng nhập hoặc mật khẩu không đúng.");
             redirectAttributes.addFlashAttribute("openModal", "login");

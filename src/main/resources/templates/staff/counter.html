@@ -7,6 +7,10 @@
 <main layout:fragment="content">
   <section class="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 animated-bg">
     <div class="relative z-10 max-w-xl mx-auto">
+      <div class="flex justify-center gap-3 mb-6">
+        <a th:href="@{/staff/dashboard}" class="px-4 py-2 rounded-xl bg-white/10 text-gray-300 text-sm hover:bg-white/15">Dashboard</a>
+        <a th:href="@{/staff/counter}" class="px-4 py-2 rounded-xl bg-cyan-600/30 border border-cyan-500/40 text-cyan-200 text-sm font-semibold">Quầy vé</a>
+      </div>
       <div class="mb-8 text-center">
         <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-cyan-500/20 border border-cyan-500/30 mb-4">
           <i class="fas fa-cash-register text-3xl text-cyan-400"></i>

@@ -112,3 +112,4 @@ CREATE TABLE IF NOT EXISTS payments (
     paid_at         TIMESTAMP      NULL,
     CONSTRAINT fk_payment_booking FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

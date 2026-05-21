@@ -1,25 +1,29 @@
 <!doctype html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/index}">
 <head>
-  <title>Báo cáo doanh thu</title>
+  <title>Dashboard thống kê</title>
 </head>
 <body>
 <main layout:fragment="content">
   <section class="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 animated-bg">
-    <div class="relative z-10 max-w-6xl mx-auto">
+    <div class="relative z-10 max-w-7xl mx-auto">
       <div class="mb-10">
-        <h1 class="text-4xl font-display font-bold text-white">Báo cáo doanh thu</h1>
-        <p class="text-gray-400 text-sm mt-1">Thống kê từ thanh toán thành công (payments.status = SUCCESS)</p>
+        <h1 class="text-4xl font-display font-bold text-white">Dashboard thống kê</h1>
+        <p class="text-gray-400 text-sm mt-1">
+          Hướng 4 — Truy vấn SQL tối ưu (JOIN, GROUP BY, HAVING). Không tính tổng bằng vòng lặp Java.
+        </p>
       </div>
 
       <form th:action="@{/admin/reports}" method="get" class="flex flex-wrap gap-4 items-end mb-8 p-6 rounded-2xl bg-cinema-card border border-white/5">
         <div>
           <label class="block text-xs text-gray-400 mb-1">Từ ngày</label>
-          <input type="date" name="from" th:value="${fromDate}" class="bg-cinema-dark border border-white/10 rounded-lg px-3 py-2 text-white text-sm"/>
+          <input type="date" name="from" th:value="${fromDate != null ? #temporals.format(fromDate, 'yyyy-MM-dd') : ''}"
+                 class="bg-cinema-dark border border-white/10 rounded-lg px-3 py-2 text-white text-sm [color-scheme:dark]"/>
         </div>
         <div>
           <label class="block text-xs text-gray-400 mb-1">Đến ngày</label>
-          <input type="date" name="to" th:value="${toDate}" class="bg-cinema-dark border border-white/10 rounded-lg px-3 py-2 text-white text-sm"/>
+          <input type="date" name="to" th:value="${toDate != null ? #temporals.format(toDate, 'yyyy-MM-dd') : ''}"
+                 class="bg-cinema-dark border border-white/10 rounded-lg px-3 py-2 text-white text-sm [color-scheme:dark]"/>
         </div>
         <button type="submit" class="px-6 py-2 rounded-lg bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-500">
           <i class="fas fa-filter mr-1"></i> Lọc
@@ -28,11 +32,11 @@
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
         <div class="rounded-2xl bg-cinema-card border border-emerald-500/20 p-6">
-          <p class="text-gray-400 text-sm">Tổng doanh thu</p>
+          <p class="text-gray-400 text-sm">Tổng doanh thu (SQL SUM)</p>
           <p class="text-3xl font-bold text-emerald-400 mt-1" th:text="${#numbers.formatDecimal(report.totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0</p>
         </div>
         <div class="rounded-2xl bg-cinema-card border border-white/5 p-6">
-          <p class="text-gray-400 text-sm">Số giao dịch thành công</p>
+          <p class="text-gray-400 text-sm">Giao dịch thành công</p>
           <p class="text-3xl font-bold text-white mt-1" th:text="${report.totalPaidBookings}">0</p>
         </div>
         <div class="rounded-2xl bg-cinema-card border border-red-500/20 p-6">
@@ -41,12 +45,63 @@
         </div>
       </div>
 
+      <!-- Biểu đồ -->
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-10">
+        <div class="rounded-2xl bg-cinema-card border border-white/5 p-6">
+          <h2 class="text-lg font-semibold text-white mb-4">
+            <i class="fas fa-chart-column text-emerald-400 mr-2"></i>Doanh thu theo tháng
+          </h2>
+          <div class="h-72 relative">
+            <canvas id="monthlyRevenueChart"></canvas>
+          </div>
+        </div>
+        <div class="rounded-2xl bg-cinema-card border border-white/5 p-6">
+          <h2 class="text-lg font-semibold text-white mb-4">
+            <i class="fas fa-trophy text-amber-400 mr-2"></i>Top 5 phim doanh thu cao
+          </h2>
+          <div class="h-72 relative">
+            <canvas id="topMoviesChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top 5 bảng chi tiết -->
+      <div class="rounded-2xl bg-cinema-card border border-amber-500/20 overflow-hidden mb-10">
+        <h2 class="px-6 py-4 text-lg font-semibold text-white border-b border-white/5">
+          Chi tiết Top 5 phim (GROUP BY + ORDER BY + LIMIT 5)
+        </h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="text-gray-400 bg-white/5">
+              <tr>
+                <th class="px-4 py-3 text-left">#</th>
+                <th class="px-4 py-3 text-left">Phim</th>
+                <th class="px-4 py-3 text-right">Số đơn</th>
+                <th class="px-4 py-3 text-right">Doanh thu</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="m : ${report.topMovies}" class="border-t border-white/5 hover:bg-white/5">
+                <td class="px-4 py-3 text-amber-400 font-bold" th:text="${m.rank}">1</td>
+                <td class="px-4 py-3 text-white font-medium" th:text="${m.movieTitle}">Phim</td>
+                <td class="px-4 py-3 text-right text-gray-300" th:text="${m.bookingCount}"></td>
+                <td class="px-4 py-3 text-right text-emerald-400 font-semibold"
+                    th:text="${#numbers.formatDecimal(m.totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(report.topMovies)}">
+                <td colspan="4" class="px-4 py-8 text-center text-gray-500">Chưa có doanh thu trong kỳ — cần đơn PAID + payment SUCCESS</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div class="rounded-2xl bg-cinema-card border border-white/5 overflow-hidden">
-          <h2 class="px-6 py-4 text-lg font-semibold text-white border-b border-white/5">Theo ngày</h2>
-          <div class="overflow-x-auto">
+          <h2 class="px-6 py-4 text-lg font-semibold text-white border-b border-white/5">Theo ngày (GROUP BY DATE)</h2>
+          <div class="overflow-x-auto max-h-80">
             <table class="w-full text-sm">
-              <thead class="text-gray-400 bg-white/5">
+              <thead class="text-gray-400 bg-white/5 sticky top-0">
                 <tr><th class="text-left px-4 py-3">Ngày</th><th class="text-right px-4 py-3">Doanh thu</th><th class="text-right px-4 py-3">GD</th></tr>
               </thead>
               <tbody>
@@ -56,7 +111,7 @@
                   <td class="px-4 py-3 text-right text-gray-300" th:text="${row.paymentCount}"></td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(report.dailyRows)}">
-                  <td colspan="3" class="px-4 py-8 text-center text-gray-500">Không có dữ liệu trong kỳ</td>
+                  <td colspan="3" class="px-4 py-8 text-center text-gray-500">Không có dữ liệu</td>
                 </tr>
               </tbody>
             </table>
@@ -64,10 +119,10 @@
         </div>
 
         <div class="rounded-2xl bg-cinema-card border border-white/5 overflow-hidden">
-          <h2 class="px-6 py-4 text-lg font-semibold text-white border-b border-white/5">Theo tháng</h2>
-          <div class="overflow-x-auto">
+          <h2 class="px-6 py-4 text-lg font-semibold text-white border-b border-white/5">Theo tháng (GROUP BY YEAR, MONTH)</h2>
+          <div class="overflow-x-auto max-h-80">
             <table class="w-full text-sm">
-              <thead class="text-gray-400 bg-white/5">
+              <thead class="text-gray-400 bg-white/5 sticky top-0">
                 <tr><th class="text-left px-4 py-3">Tháng</th><th class="text-right px-4 py-3">Doanh thu</th><th class="text-right px-4 py-3">GD</th></tr>
               </thead>
               <tbody>
@@ -77,7 +132,7 @@
                   <td class="px-4 py-3 text-right text-gray-300" th:text="${row.paymentCount}"></td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(report.monthlyRows)}">
-                  <td colspan="3" class="px-4 py-8 text-center text-gray-500">Không có dữ liệu trong kỳ</td>
+                  <td colspan="3" class="px-4 py-8 text-center text-gray-500">Không có dữ liệu</td>
                 </tr>
               </tbody>
             </table>
@@ -86,6 +141,85 @@
       </div>
     </div>
   </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script th:inline="javascript" layout:fragment="scripts">
+    (function () {
+      const monthlyLabels = /*[[${report.monthlyRows.![monthLabel]}]]*/ [];
+      const monthlyData = /*[[${report.monthlyRows.![revenue]}]]*/ [];
+      const topLabels = /*[[${report.topMovies.![movieTitle]}]]*/ [];
+      const topData = /*[[${report.topMovies.![totalRevenue]}]]*/ [];
+
+      const chartDefaults = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#9ca3af' } }
+        },
+        scales: {
+          x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.06)' } },
+          y: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.06)' } }
+        }
+      };
+
+      const monthlyCtx = document.getElementById('monthlyRevenueChart');
+      if (monthlyCtx && monthlyLabels.length) {
+        new Chart(monthlyCtx, {
+          type: 'bar',
+          data: {
+            labels: monthlyLabels,
+            datasets: [{
+              label: 'Doanh thu (₫)',
+              data: monthlyData.map(v => Number(v)),
+              backgroundColor: 'rgba(16, 185, 129, 0.55)',
+              borderColor: 'rgb(16, 185, 129)',
+              borderWidth: 1,
+              borderRadius: 6
+            }]
+          },
+          options: {
+            ...chartDefaults,
+            plugins: {
+              ...chartDefaults.plugins,
+              tooltip: {
+                callbacks: {
+                  label: function (ctx) {
+                    return ctx.parsed.y.toLocaleString('vi-VN') + ' ₫';
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+
+      const topCtx = document.getElementById('topMoviesChart');
+      if (topCtx && topLabels.length) {
+        new Chart(topCtx, {
+          type: 'bar',
+          data: {
+            labels: topLabels,
+            datasets: [{
+              label: 'Doanh thu (₫)',
+              data: topData.map(v => Number(v)),
+              backgroundColor: [
+                'rgba(245, 158, 11, 0.7)',
+                'rgba(168, 85, 247, 0.65)',
+                'rgba(59, 130, 246, 0.65)',
+                'rgba(236, 72, 153, 0.65)',
+                'rgba(34, 197, 94, 0.65)'
+              ],
+              borderRadius: 6
+            }]
+          },
+          options: {
+            indexAxis: 'y',
+            ...chartDefaults
+          }
+        });
+      }
+    })();
+  </script>
 </main>
 </body>
 </html>

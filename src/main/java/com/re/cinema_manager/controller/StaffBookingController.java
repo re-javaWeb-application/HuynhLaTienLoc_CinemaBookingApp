@@ -23,7 +23,7 @@ public class StaffBookingController {
 
     @GetMapping
     public String staffHome() {
-        return "redirect:/staff/counter";
+        return "redirect:/staff/dashboard";
     }
 
     @GetMapping("/counter")

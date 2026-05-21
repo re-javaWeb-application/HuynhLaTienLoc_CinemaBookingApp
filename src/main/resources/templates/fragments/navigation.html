@@ -37,7 +37,10 @@
                 </th:block>
                 <!-- Nhân viên -->
                 <th:block th:if="${session.loggedInUser != null and session.loggedInUser.role.name() == 'STAFF'}">
-                    <a th:href="@{/staff/counter}" class="relative text-cyan-300 hover:text-white px-4 py-2 text-sm font-semibold transition-all duration-300 rounded-lg hover:bg-cyan-500/10 border border-cyan-500/20">
+                    <a th:href="@{/staff/dashboard}" class="relative text-cyan-300 hover:text-white px-4 py-2 text-sm font-semibold transition-all duration-300 rounded-lg hover:bg-cyan-500/10 border border-cyan-500/20">
+                        <i class="fas fa-chart-pie mr-1.5 text-xs"></i> Dashboard
+                    </a>
+                    <a th:href="@{/staff/counter}" class="relative text-cyan-300/80 hover:text-white px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-cyan-500/10">
                         <i class="fas fa-cash-register mr-1.5 text-xs"></i> Quầy vé
                     </a>
                 </th:block>
@@ -50,7 +53,10 @@
                         <i class="fas fa-calendar-plus mr-1.5 text-xs"></i> Lịch chiếu
                     </a>
                     <a th:href="@{/admin/reports}" class="relative text-emerald-300 hover:text-white px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-emerald-500/10">
-                        <i class="fas fa-chart-line mr-1.5 text-xs"></i> Doanh thu
+                        <i class="fas fa-chart-line mr-1.5 text-xs"></i> Dashboard
+                    </a>
+                    <a th:href="@{/admin/users}" class="relative text-sky-300 hover:text-white px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-sky-500/10">
+                        <i class="fas fa-users mr-1.5 text-xs"></i> Tài khoản
                     </a>
                 </th:block>
             </nav>
@@ -114,6 +120,9 @@
                         <i class="fas fa-ticket text-emerald-400 w-5 text-center"></i> Vé của tôi
                     </a>
                 </th:block>
+                <a th:if="${session.loggedInUser != null and session.loggedInUser.role.name() == 'STAFF'}" th:href="@{/staff/dashboard}" class="flex items-center gap-3 text-cyan-300 hover:text-white py-3 px-4 rounded-xl hover:bg-cyan-500/10 transition-all text-sm font-medium">
+                    <i class="fas fa-chart-pie w-5 text-center"></i> Dashboard
+                </a>
                 <a th:if="${session.loggedInUser != null and session.loggedInUser.role.name() == 'STAFF'}" th:href="@{/staff/counter}" class="flex items-center gap-3 text-cyan-300 hover:text-white py-3 px-4 rounded-xl hover:bg-cyan-500/10 transition-all text-sm font-medium">
                     <i class="fas fa-cash-register w-5 text-center"></i> Quầy vé
                 </a>

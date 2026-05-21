@@ -58,4 +58,18 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
               AND b.createdAt >= :from AND b.createdAt < :to
             """)
     long countCancelledBetween(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
+
+    long countByUserId(Long userId);
+
+    @Query("""
+            SELECT COUNT(b) FROM Booking b
+            WHERE b.showtime.movie.id = :movieId
+            AND b.status IN (
+                com.re.cinema_manager.model.entity.BookingStatus.PAID,
+                com.re.cinema_manager.model.entity.BookingStatus.PENDING
+            )
+            """)
+    long countActiveBookingsByMovieId(@Param("movieId") Long movieId);
+
+    void deleteByShowtime_Movie_Id(Long movieId);
 }

@@ -40,7 +40,9 @@
           </div>
           <div>
             <label class="block text-sm font-semibold text-gray-200 mb-2">Giờ bắt đầu chiếu *</label>
-            <input type="datetime-local" th:field="*{startTime}" class="w-full px-4 py-3 rounded-lg bg-cinema-surface border border-white/10 text-white" />
+            <input type="datetime-local" name="startTime" required
+                   th:value="${showtimeDto.startTime != null ? #temporals.format(showtimeDto.startTime, 'yyyy-MM-dd''T''HH:mm') : ''}"
+                   class="w-full px-4 py-3 rounded-lg bg-cinema-surface border border-white/10 text-white [color-scheme:dark]" />
             <p th:if="${#fields.hasErrors('startTime')}" th:errors="*{startTime}" class="text-red-400 text-xs mt-1"></p>
           </div>
           <div class="flex gap-3 pt-4">

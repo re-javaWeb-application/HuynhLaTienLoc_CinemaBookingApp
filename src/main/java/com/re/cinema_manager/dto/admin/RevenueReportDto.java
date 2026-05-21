@@ -18,4 +18,6 @@ public class RevenueReportDto {
     private long cancelledBookingsInRange;
     private List<RevenueDailyRowDto> dailyRows;
     private List<RevenueMonthlyRowDto> monthlyRows;
+    /** Top 5 phim — tính bằng SQL GROUP BY, không cộng dồn trong Java */
+    private List<TopMovieRevenueDto> topMovies;
 }

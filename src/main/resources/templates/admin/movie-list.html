@@ -75,12 +75,14 @@
                     <td class="px-6 py-4">
                       <div class="flex items-center gap-3">
                         <img
+                          th:if="${movie.posterUrl != null and !#strings.isEmpty(movie.posterUrl)}"
                           th:src="${movie.posterUrl}"
                           alt="Poster"
+                          referrerpolicy="no-referrer"
                           class="w-12 h-16 rounded object-cover bg-cinema-surface"
                           loading="lazy"
                           decoding="async"
-                          onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2748%27 height=%2764%27%3E%3Crect fill=%27%231a1a2e%27 width=%2748%27 height=%2764%27/%3E%3Ctext x=%2724%27 y=%2736%27 fill=%27%236b7280%27 font-size=%278%27 text-anchor=%27middle%27%3EN/A%3C/text%3E%3C/svg%3E'"
+                          onerror="this.style.display='none'"
                         />
                         <div>
                           <p class="font-semibold text-white" th:text="${movie.title}"></p>

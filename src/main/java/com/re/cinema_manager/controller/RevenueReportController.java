@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDate;
 
 /**
- * Báo cáo doanh thu Admin — thống kê từ bảng payments (SUCCESS).
+ * Dashboard Admin — Hướng 4: doanh thu theo tháng, Top 5 phim (SQL GROUP BY / JOIN).
  */
 @Controller
 @RequestMapping("/admin/reports")
@@ -29,7 +29,8 @@ public class RevenueReportController {
             Model model) {
 
         LocalDate toDate = to != null ? to : LocalDate.now();
-        LocalDate fromDate = from != null ? from : toDate.withDayOfMonth(1);
+        // Mặc định 12 tháng gần nhất — phù hợp biểu đồ doanh thu theo tháng
+        LocalDate fromDate = from != null ? from : toDate.minusMonths(11).withDayOfMonth(1);
 
         RevenueReportDto report = revenueReportService.buildReport(fromDate, toDate);
         model.addAttribute("report", report);
