@@ -196,16 +196,21 @@ public class BookingServiceImpl implements BookingService {
             throw new InvalidBookingRequestException(BookingPolicy.cancelDeniedMessage(cancelDecision));
         }
 
+        // Xóa tickets bằng JPQL bulk delete (clearAutomatically=true sẽ clear persistence context)
         ticketRepository.deleteByBookingId(booking.getId());
-        booking.getTickets().clear();
 
-        if (booking.getPayment() != null) {
-            booking.getPayment().setStatus(PaymentStatus.FAILED);
+        // Sau khi clear persistence context, load lại booking mới để tránh stale entity
+        Booking fresh = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new InvalidBookingRequestException("Không tìm thấy đơn đặt vé."));
+
+        if (fresh.getPayment() != null) {
+            fresh.getPayment().setStatus(PaymentStatus.FAILED);
         }
-        booking.setStatus(BookingStatus.CANCELLED);
-        bookingRepository.save(booking);
+        fresh.setStatus(BookingStatus.CANCELLED);
+        bookingRepository.save(fresh);
         log.info("Booking cancelled id={} user={}", bookingId, userId);
     }
+
 
     @Override
     @Transactional(readOnly = true)

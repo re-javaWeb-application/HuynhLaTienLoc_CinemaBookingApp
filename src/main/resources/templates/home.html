@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html
   lang="vi"
   xmlns:th="http://www.thymeleaf.org"
@@ -328,7 +328,7 @@
                     class="bg-gray-950 border border-gray-800 text-white text-sm rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 block w-full pl-11 p-3 outline-none transition-all placeholder-gray-600 shadow-inner"
                     placeholder="Nguyễn Văn A" />
                 </div>
-                <p th:if="${registerFieldErrors != null && registerFieldErrors['fullName']}" th:text="${registerFieldErrors['fullName']}" class="text-red-400 text-xs mt-1 pl-1"></p>
+                <p th:if="${registerFieldErrors != null && registerFieldErrors['fullName'] != null}" th:text="${registerFieldErrors['fullName']}" class="text-red-400 text-xs mt-1 pl-1"></p>
               </div>
               <div>
                 <label for="reg-username" class="block text-sm font-semibold text-gray-300 mb-1.5">Tên đăng nhập</label>
@@ -340,7 +340,7 @@
                     class="bg-gray-950 border border-gray-800 text-white text-sm rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 block w-full pl-11 p-3 outline-none transition-all placeholder-gray-600 shadow-inner"
                     placeholder="tendangnhap" />
                 </div>
-                <p th:if="${registerFieldErrors != null && registerFieldErrors['username']}" th:text="${registerFieldErrors['username']}" class="text-red-400 text-xs mt-1 pl-1"></p>
+                <p th:if="${registerFieldErrors != null && registerFieldErrors['username'] != null}" th:text="${registerFieldErrors['username']}" class="text-red-400 text-xs mt-1 pl-1"></p>
               </div>
               <div>
                 <label for="reg-email" class="block text-sm font-semibold text-gray-300 mb-1.5">Email</label>
@@ -352,7 +352,7 @@
                     class="bg-gray-950 border border-gray-800 text-white text-sm rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 block w-full pl-11 p-3 outline-none transition-all placeholder-gray-600 shadow-inner"
                     placeholder="email@example.com" />
                 </div>
-                <p th:if="${registerFieldErrors != null && registerFieldErrors['email']}" th:text="${registerFieldErrors['email']}" class="text-red-400 text-xs mt-1 pl-1"></p>
+                <p th:if="${registerFieldErrors != null && registerFieldErrors['email'] != null}" th:text="${registerFieldErrors['email']}" class="text-red-400 text-xs mt-1 pl-1"></p>
               </div>
               <div>
                 <label for="reg-phone" class="block text-sm font-semibold text-gray-300 mb-1.5">Số điện thoại</label>
@@ -364,7 +364,7 @@
                     class="bg-gray-950 border border-gray-800 text-white text-sm rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 block w-full pl-11 p-3 outline-none transition-all placeholder-gray-600 shadow-inner"
                     placeholder="0901234567" />
                 </div>
-                <p th:if="${registerFieldErrors != null && registerFieldErrors['phone']}" th:text="${registerFieldErrors['phone']}" class="text-red-400 text-xs mt-1 pl-1"></p>
+                <p th:if="${registerFieldErrors != null && registerFieldErrors['phone'] != null}" th:text="${registerFieldErrors['phone']}" class="text-red-400 text-xs mt-1 pl-1"></p>
               </div>
               <div>
                 <label for="reg-password" class="block text-sm font-semibold text-gray-300 mb-1.5">Mật khẩu</label>
@@ -376,7 +376,7 @@
                     class="bg-gray-950 border border-gray-800 text-white text-sm rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 block w-full pl-11 p-3 outline-none transition-all placeholder-gray-600 shadow-inner"
                     placeholder="••••••••" />
                 </div>
-                <p th:if="${registerFieldErrors != null && registerFieldErrors['password']}" th:text="${registerFieldErrors['password']}" class="text-red-400 text-xs mt-1 pl-1"></p>
+                <p th:if="${registerFieldErrors != null && registerFieldErrors['password'] != null}" th:text="${registerFieldErrors['password']}" class="text-red-400 text-xs mt-1 pl-1"></p>
               </div>
               <button
                 type="submit"
