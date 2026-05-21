@@ -1,9 +1,9 @@
 package com.re.cinema_manager.service;
 
-import com.re.cinema_manager.model.dto.ShowtimeRequestDTO;
-import com.re.cinema_manager.model.dto.admin.MovieOptionDto;
-import com.re.cinema_manager.model.dto.admin.RoomOptionDto;
-import com.re.cinema_manager.model.dto.admin.ShowtimeListItemDto;
+import com.re.cinema_manager.dto.showtime.ShowtimeRequestDTO;
+import com.re.cinema_manager.dto.showtime.MovieOptionDto;
+import com.re.cinema_manager.dto.showtime.RoomOptionDto;
+import com.re.cinema_manager.dto.showtime.ShowtimeListItemDto;
 
 import java.util.List;
 

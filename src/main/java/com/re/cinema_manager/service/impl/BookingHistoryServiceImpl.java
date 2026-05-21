@@ -65,7 +65,9 @@ public class BookingHistoryServiceImpl implements BookingHistoryService {
                 ? booking.getPayment().getStatus().name()
                 : (booking.getStatus() == BookingStatus.PENDING ? "CHUA_THANH_TOAN" : "—");
 
-        boolean cancellable = isCancellable(booking);
+        var cancelDecision = BookingPolicy.evaluateCancel(booking.getStatus(), st.getStartTime());
+        boolean cancellable = cancelDecision.allowed();
+        String cancelBlockReason = cancellable ? null : cancelDecision.blockReason();
 
         return BookingHistoryItemDto.builder()
                 .bookingId(booking.getId())
@@ -81,13 +83,18 @@ public class BookingHistoryServiceImpl implements BookingHistoryService {
                 .bookedAt(booking.getCreatedAt())
                 .bookingStatus(booking.getStatus().name())
                 .cancellable(cancellable)
+                .cancelBlockReason(cancelBlockReason)
+                .paymentChannel(resolvePaymentChannel(booking))
                 .build();
     }
 
-    private static boolean isCancellable(Booking booking) {
-        if (booking.getStatus() != BookingStatus.PAID && booking.getStatus() != BookingStatus.PENDING) {
-            return false;
+    private static String resolvePaymentChannel(Booking booking) {
+        if (booking.getStatus() == BookingStatus.PENDING) {
+            return "COUNTER_PENDING";
         }
-        return BookingPolicy.canCancelByTime(booking.getShowtime().getStartTime());
+        if (booking.getPayment() != null && "CASH_COUNTER".equals(booking.getPayment().getPaymentMethod())) {
+            return "COUNTER_PAID";
+        }
+        return "ONLINE";
     }
 }

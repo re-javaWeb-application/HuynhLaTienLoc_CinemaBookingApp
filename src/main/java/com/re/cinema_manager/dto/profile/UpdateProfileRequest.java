@@ -1,4 +1,4 @@
-package com.re.cinema_manager.model.dto;
+package com.re.cinema_manager.dto.profile;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

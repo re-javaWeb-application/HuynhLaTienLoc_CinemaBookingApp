@@ -1,4 +1,4 @@
-package com.re.cinema_manager.model.dto.admin;
+package com.re.cinema_manager.dto.showtime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MovieOptionDto {
+public class RoomOptionDto {
 
     private Long id;
-    private String title;
-    private int durationMinutes;
+    private String roomName;
+    private int capacity;
 }

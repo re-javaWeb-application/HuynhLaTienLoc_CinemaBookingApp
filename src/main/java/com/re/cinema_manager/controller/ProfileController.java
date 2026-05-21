@@ -1,7 +1,7 @@
 package com.re.cinema_manager.controller;
 
-import com.re.cinema_manager.model.dto.ProfileViewModel;
-import com.re.cinema_manager.model.dto.UpdateProfileRequest;
+import com.re.cinema_manager.dto.profile.ProfileViewModel;
+import com.re.cinema_manager.dto.profile.UpdateProfileRequest;
 import com.re.cinema_manager.model.entity.User;
 import com.re.cinema_manager.service.ProfileService;
 import jakarta.servlet.http.HttpSession;

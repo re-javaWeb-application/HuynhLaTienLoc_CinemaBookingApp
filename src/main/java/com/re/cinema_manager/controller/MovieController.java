@@ -1,6 +1,6 @@
 package com.re.cinema_manager.controller;
 
-import com.re.cinema_manager.model.dto.MovieRequestDTO;
+import com.re.cinema_manager.dto.movie.MovieRequestDTO;
 import com.re.cinema_manager.service.MovieService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

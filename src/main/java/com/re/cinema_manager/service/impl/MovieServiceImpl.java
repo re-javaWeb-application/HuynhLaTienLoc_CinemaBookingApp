@@ -1,8 +1,8 @@
 package com.re.cinema_manager.service.impl;
 
-import com.re.cinema_manager.model.dto.MovieRequestDTO;
-import com.re.cinema_manager.model.dto.admin.GenreOptionDto;
-import com.re.cinema_manager.model.dto.admin.MovieListItemDto;
+import com.re.cinema_manager.dto.movie.MovieRequestDTO;
+import com.re.cinema_manager.dto.movie.GenreOptionDto;
+import com.re.cinema_manager.dto.movie.MovieListItemDto;
 import com.re.cinema_manager.model.entity.Genre;
 import com.re.cinema_manager.model.entity.Movie;
 import com.re.cinema_manager.repository.BookingRepository;

@@ -1,7 +1,7 @@
 package com.re.cinema_manager.service;
 
-import com.re.cinema_manager.model.dto.ProfileViewModel;
-import com.re.cinema_manager.model.dto.UpdateProfileRequest;
+import com.re.cinema_manager.dto.profile.ProfileViewModel;
+import com.re.cinema_manager.dto.profile.UpdateProfileRequest;
 import jakarta.transaction.Transactional;
 
 public interface ProfileService {

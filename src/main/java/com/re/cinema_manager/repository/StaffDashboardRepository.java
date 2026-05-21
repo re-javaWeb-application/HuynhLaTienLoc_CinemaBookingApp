@@ -29,7 +29,8 @@ public interface StaffDashboardRepository extends JpaRepository<Showtime, Long> 
     @Query("""
             SELECT st.id, m.title, r.roomName, st.startTime,
                    COUNT(DISTINCT t.id),
-                   (SELECT COUNT(s2.id) FROM Seat s2 WHERE s2.room.id = r.id)
+                   (SELECT COUNT(s2.id) FROM Seat s2 WHERE s2.room.id = r.id),
+                   r.id
             FROM Showtime st
             JOIN st.movie m
             JOIN st.room r
@@ -54,4 +55,17 @@ public interface StaffDashboardRepository extends JpaRepository<Showtime, Long> 
 
     @Query("SELECT COUNT(s) FROM Seat s")
     long countAllSeats();
+
+    @Query("""
+            SELECT t.seat.id, t.seat.seatName, b.id, u.username,
+                   COALESCE(up.fullName, u.username), b.status
+            FROM Ticket t
+            JOIN t.booking b
+            JOIN b.user u
+            LEFT JOIN u.userProfile up
+            WHERE t.showtime.id = :showtimeId
+            AND b.status <> com.re.cinema_manager.model.entity.BookingStatus.CANCELLED
+            ORDER BY t.seat.seatName
+            """)
+    List<Object[]> findBookedSeatDetailsByShowtimeId(@Param("showtimeId") Long showtimeId);
 }

@@ -1,7 +1,7 @@
 package com.re.cinema_manager.service;
 
-import com.re.cinema_manager.model.dto.GenreSectionView;
-import com.re.cinema_manager.model.dto.UpcomingMovieView;
+import com.re.cinema_manager.dto.customer.GenreSectionView;
+import com.re.cinema_manager.dto.customer.UpcomingMovieView;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.re.cinema_manager.model.dto.admin;
+package com.re.cinema_manager.dto.movie;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -7,14 +7,11 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class ShowtimeOccupancyDto {
+public class StaffRoomShowtimeOptionDto {
 
     private Long showtimeId;
-    private Long roomId;
     private String movieTitle;
-    private String roomName;
     private LocalDateTime startTime;
     private long bookedSeats;
     private long totalSeats;
-    private double occupancyPercent;
 }

@@ -1,7 +1,7 @@
 package com.re.cinema_manager.service.impl;
 
-import com.re.cinema_manager.model.dto.GenreSectionView;
-import com.re.cinema_manager.model.dto.UpcomingMovieView;
+import com.re.cinema_manager.dto.customer.GenreSectionView;
+import com.re.cinema_manager.dto.customer.UpcomingMovieView;
 import com.re.cinema_manager.model.entity.Genre;
 import com.re.cinema_manager.model.entity.Showtime;
 import com.re.cinema_manager.repository.ShowtimeRepository;

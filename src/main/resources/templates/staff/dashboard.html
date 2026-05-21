@@ -54,6 +54,7 @@
                 <th class="px-6 py-3">Ghế trên sơ đồ</th>
                 <th class="px-6 py-3">Vé đã bán (sắp tới)</th>
                 <th class="px-6 py-3">Tỷ lệ</th>
+                <th class="px-6 py-3 text-right">Thao tác</th>
               </tr>
             </thead>
             <tbody>
@@ -65,9 +66,15 @@
                 <td class="px-6 py-3">
                   <span class="text-brand-400 font-semibold" th:text="${r.occupancyPercent} + '%'"></span>
                 </td>
+                <td class="px-6 py-3 text-right">
+                  <a th:href="@{/staff/dashboard/rooms/{id}(id=${r.roomId})}"
+                     class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-cyan-600/25 border border-cyan-500/40 text-cyan-200 text-xs font-semibold hover:bg-cyan-600/40">
+                    <i class="fas fa-door-open"></i> Xem phòng
+                  </a>
+                </td>
               </tr>
               <tr th:if="${#lists.isEmpty(dashboard.roomStats)}">
-                <td colspan="5" class="px-6 py-8 text-center text-gray-500">Chưa có dữ liệu phòng.</td>
+                <td colspan="6" class="px-6 py-8 text-center text-gray-500">Chưa có dữ liệu phòng.</td>
               </tr>
             </tbody>
           </table>
@@ -87,6 +94,7 @@
                 <th class="px-6 py-3">Giờ chiếu</th>
                 <th class="px-6 py-3">Đã đặt / Tổng ghế</th>
                 <th class="px-6 py-3">%</th>
+                <th class="px-6 py-3 text-right">Sơ đồ ghế</th>
               </tr>
             </thead>
             <tbody>
@@ -100,9 +108,15 @@
                   <span th:text="${st.totalSeats}"></span>
                 </td>
                 <td class="px-6 py-3 text-brand-400 font-semibold" th:text="${st.occupancyPercent} + '%'"></td>
+                <td class="px-6 py-3 text-right">
+                  <a th:href="@{/staff/dashboard/rooms/{id}(id=${st.roomId}, showtimeId=${st.showtimeId})}"
+                     class="text-cyan-300 hover:text-cyan-200 text-xs font-semibold">
+                    <i class="fas fa-chair mr-1"></i> Xem ghế
+                  </a>
+                </td>
               </tr>
               <tr th:if="${#lists.isEmpty(dashboard.showtimeDetails)}">
-                <td colspan="5" class="px-6 py-8 text-center text-gray-500">Chưa có suất chiếu sắp tới.</td>
+                <td colspan="6" class="px-6 py-8 text-center text-gray-500">Chưa có suất chiếu sắp tới.</td>
               </tr>
             </tbody>
           </table>

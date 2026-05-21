@@ -24,6 +24,10 @@ public class BookingHistoryItemDto {
     private LocalDateTime bookedAt;
     /** PAID | PENDING | CANCELLED */
     private String bookingStatus;
-    /** Có thể hủy (PAID/PENDING và suất chưa bắt đầu) */
+    /** Có thể hủy theo BookingPolicy (PENDING: trước giờ chiếu; PAID: trước 24h) */
     private boolean cancellable;
+    /** Lý do không hủy được (hiển thị khi cancellable = false và đơn chưa CANCELLED) */
+    private String cancelBlockReason;
+    /** ONLINE | COUNTER_PENDING | COUNTER_PAID */
+    private String paymentChannel;
 }

@@ -190,8 +190,10 @@ public class BookingServiceImpl implements BookingService {
         if (booking.getStatus() != BookingStatus.PAID && booking.getStatus() != BookingStatus.PENDING) {
             throw new InvalidBookingRequestException("Không thể hủy đơn ở trạng thái hiện tại.");
         }
-        if (!BookingPolicy.canCancelByTime(booking.getShowtime().getStartTime())) {
-            throw new InvalidBookingRequestException(BookingPolicy.cancelTooLateMessage());
+        var cancelDecision = BookingPolicy.evaluateCancel(
+                booking.getStatus(), booking.getShowtime().getStartTime());
+        if (!cancelDecision.allowed()) {
+            throw new InvalidBookingRequestException(BookingPolicy.cancelDeniedMessage(cancelDecision));
         }
 
         ticketRepository.deleteByBookingId(booking.getId());

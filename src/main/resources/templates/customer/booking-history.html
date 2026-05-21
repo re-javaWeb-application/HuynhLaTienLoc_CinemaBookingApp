@@ -8,7 +8,10 @@
   <section class="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 animated-bg">
     <div class="relative z-10 max-w-4xl mx-auto">
       <h1 class="text-3xl font-bold text-white mb-2">Lịch sử đặt vé</h1>
-      <p class="text-gray-400 text-sm mb-6">Xem vé đã đặt, chờ thanh toán tại quầy hoặc hủy vé <strong class="text-gray-300">trước ít nhất 24 giờ</strong> so với giờ chiếu.</p>
+      <p class="text-gray-400 text-sm mb-6">
+        <strong class="text-gray-300">Online / đã thanh toán:</strong> hủy trước ít nhất 24 giờ so với giờ chiếu.
+        <strong class="text-gray-300">Tại quầy (chờ thanh toán):</strong> hủy được đến trước giờ chiếu.
+      </p>
 
       <div th:if="${successMessage}" class="mb-4 p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-200 text-sm" th:text="${successMessage}"></div>
       <div th:if="${errorMessage}" class="mb-4 p-4 rounded-xl bg-red-500/15 border border-red-500/40 text-red-200 text-sm" th:text="${errorMessage}"></div>
@@ -32,10 +35,13 @@
               <h2 class="text-lg font-bold text-white" th:text="${item.movieTitle}">Phim</h2>
               <span class="text-xs font-mono text-gray-500" th:text="${item.bookingCode}">BK-1</span>
             </div>
-            <p class="mb-2">
+            <p class="mb-2 flex flex-wrap gap-2 items-center">
               <span th:if="${item.bookingStatus == 'PAID'}" class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Đã thanh toán</span>
               <span th:if="${item.bookingStatus == 'PENDING'}" class="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">Chờ thanh toán tại quầy</span>
               <span th:if="${item.bookingStatus == 'CANCELLED'}" class="text-xs px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">Đã hủy</span>
+              <span th:if="${item.paymentChannel == 'ONLINE'}" class="text-xs text-gray-500">· Thanh toán online</span>
+              <span th:if="${item.paymentChannel == 'COUNTER_PENDING'}" class="text-xs text-gray-500">· Đặt tại quầy</span>
+              <span th:if="${item.paymentChannel == 'COUNTER_PAID'}" class="text-xs text-gray-500">· Đã thanh toán tại quầy</span>
             </p>
             <p class="text-gray-400 text-sm mb-3">
               <span th:text="${item.cinemaName}">Rạp</span> ·
@@ -53,14 +59,22 @@
             </p>
             <div class="mt-4 flex flex-wrap gap-2" th:if="${item.cancellable}">
               <form th:action="@{/booking/history/{id}/cancel(id=${item.bookingId})}" method="post"
-                    onsubmit="return confirm('Bạn chắc chắn muốn hủy vé? Ghế sẽ được giải phóng.');">
+                    onsubmit="return confirm(this.dataset.confirmMsg);"
+                    th:attr="data-confirm-msg=${item.bookingStatus == 'PENDING'}
+                      ? 'Hủy đơn chờ thanh toán tại quầy? Ghế sẽ được giải phóng ngay.'
+                      : 'Bạn chắc chắn muốn hủy vé đã thanh toán? Ghế sẽ được giải phóng.'">
                 <button type="submit" class="px-4 py-2 rounded-lg bg-red-500/20 text-red-300 border border-red-500/40 text-sm font-semibold hover:bg-red-500/30">
                   <i class="fas fa-ban mr-1"></i> Hủy vé
                 </button>
               </form>
             </div>
+            <p th:if="${!item.cancellable and item.bookingStatus != 'CANCELLED' and item.cancelBlockReason != null}"
+               class="text-xs text-gray-500 mt-2">
+              <i class="fas fa-info-circle mr-1"></i>
+              <span th:text="${item.cancelBlockReason}">Không thể hủy</span>
+            </p>
             <p th:if="${item.bookingStatus == 'PENDING'}" class="text-xs text-amber-200/80 mt-2">
-              Mang mã <strong th:text="${item.bookingCode}"></strong> đến quầy để thanh toán.
+              Mang mã <strong th:text="${item.bookingCode}"></strong> đến quầy để thanh toán. Chưa thanh toán có thể hủy trực tuyến trước giờ chiếu.
             </p>
           </div>
         </article>

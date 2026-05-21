@@ -1,6 +1,6 @@
 package com.re.cinema_manager.controller;
 
-import com.re.cinema_manager.model.dto.ShowtimeRequestDTO;
+import com.re.cinema_manager.dto.showtime.ShowtimeRequestDTO;
 import com.re.cinema_manager.service.ShowtimeService;
 import com.re.cinema_manager.service.showtime.ShowtimeConflictChecker;
 import jakarta.validation.Valid;

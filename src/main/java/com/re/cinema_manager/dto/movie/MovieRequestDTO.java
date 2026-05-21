@@ -1,4 +1,4 @@
-package com.re.cinema_manager.model.dto;
+package com.re.cinema_manager.dto.movie;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

@@ -1,4 +1,4 @@
-package com.re.cinema_manager.model.dto;
+package com.re.cinema_manager.dto.showtime;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

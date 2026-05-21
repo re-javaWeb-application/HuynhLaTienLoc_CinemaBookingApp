@@ -2,6 +2,7 @@ package com.re.cinema_manager.repository;
 
 import com.re.cinema_manager.model.entity.Ticket;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -31,7 +32,9 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             """)
     List<Long> findBookedSeatIdsAmong(@Param("showtimeId") Long showtimeId, @Param("seatIds") Collection<Long> seatIds);
 
-    void deleteByBookingId(Long bookingId);
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM Ticket t WHERE t.booking.id = :bookingId")
+    void deleteByBookingId(@Param("bookingId") Long bookingId);
 
     @Query("""
             SELECT DISTINCT t FROM Ticket t
